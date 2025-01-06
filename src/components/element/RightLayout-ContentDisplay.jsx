@@ -1,32 +1,13 @@
 import { Routes, Route } from "react-router-dom";
 import Index from "../pages/Index";
 import IndividualProject from "../pages/IndividualProject";
-import PropTypes from "prop-types";
 
-function ContentDisplay({ tasks, projects, setTasks }) {
+function ContentDisplay() {
   return (
     <Routes>
       <Route path="/" element={<Index />} />
-      <Route
-        path="/my-projects/:id"
-        element={
-          <IndividualProject
-            tasks={tasks}
-            projects={projects}
-            setTasks={setTasks}
-          />
-        }
-      />
-      <Route
-        path="/my-favorites/:id"
-        element={
-          <IndividualProject
-            tasks={tasks}
-            projects={projects}
-            setTasks={setTasks}
-          />
-        }
-      />
+      <Route path="/my-projects/:id" element={<IndividualProject />} />
+      <Route path="/my-favorites/:id" element={<IndividualProject />} />
       <Route path="/test" element={<h3>Test</h3>} />
       <Route
         path="*"
@@ -35,11 +16,5 @@ function ContentDisplay({ tasks, projects, setTasks }) {
     </Routes>
   );
 }
-
-ContentDisplay.propTypes = {
-  tasks: PropTypes.array.isRequired,
-  projects: PropTypes.array.isRequired,
-  setTasks: PropTypes.func.isRequired,
-};
 
 export default ContentDisplay;

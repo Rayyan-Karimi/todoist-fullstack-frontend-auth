@@ -1,23 +1,30 @@
 // AddProjectModal.jsx
-import PropTypes from "prop-types";
 import { Modal, Form, Input, Checkbox, Button } from "antd";
+import { useContext } from "react";
+import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
 
-const AddProjectModal = ({ isVisible, onCancel, onSubmit }) => {
+const AddProjectModal = () => {
+  const {
+    addProjectForm,
+    isAddProjectModalVisible,
+    handleModalCancelForAddProject,
+    handleFormSubmitForAddProject,
+  } = useContext(ProjectsAndTasksContext);
+
   return (
     <Modal
       title="Add New Project"
-      // visible={isVisible}
-      open={isVisible}
-      onCancel={onCancel}
+      open={isAddProjectModalVisible}
+      onCancel={handleModalCancelForAddProject}
       footer={null} // Use Form buttons instead
     >
       <Form
-        name="addProjectForm"
+        name={"addProjectForm"}
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         initialValues={{ remember: true }}
-        onFinish={onSubmit}
-        onFinishFailed={onCancel}
+        onFinish={handleFormSubmitForAddProject}
+        onFinishFailed={handleModalCancelForAddProject}
         autoComplete="off"
       >
         <Form.Item
@@ -42,17 +49,11 @@ const AddProjectModal = ({ isVisible, onCancel, onSubmit }) => {
           <Button type="primary" htmlType="submit" style={{ marginRight: 8 }}>
             Add Project
           </Button>
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={handleModalCancelForAddProject}>Cancel</Button>
         </Form.Item>
       </Form>
     </Modal>
   );
-};
-
-AddProjectModal.propTypes = {
-  isVisible: PropTypes.bool.isRequired,
-  onCancel: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
 };
 
 export default AddProjectModal;

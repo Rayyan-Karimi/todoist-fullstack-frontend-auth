@@ -1,6 +1,7 @@
 // Project Actions Dropdown
 import PropTypes from "prop-types";
 import { Dropdown } from "antd";
+import { useContext } from "react";
 import {
   EditOutlined,
   DeleteOutlined,
@@ -8,12 +9,11 @@ import {
   FrownOutlined,
   HeartOutlined,
 } from "@ant-design/icons";
+import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
 
-const ProjectActionsDropdown = ({
-  project,
-  showProjectActionsModal,
-  handleUpdateFavoriteProjectStatus,
-}) => {
+const ProjectActionsDropdown = ({ project }) => {
+  const { handleUpdateFavoriteProjectStatus, showProjectActionsModal } =
+    useContext(ProjectsAndTasksContext);
   const menu = {
     items: [
       {
@@ -74,8 +74,6 @@ ProjectActionsDropdown.propTypes = {
     name: PropTypes.string.isRequired,
     isFavorite: PropTypes.bool.isRequired,
   }).isRequired,
-  showProjectActionsModal: PropTypes.func.isRequired,
-  handleUpdateFavoriteProjectStatus: PropTypes.func.isRequired,
 };
 
 export default ProjectActionsDropdown;

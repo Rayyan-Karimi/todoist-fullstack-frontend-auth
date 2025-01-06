@@ -1,25 +1,32 @@
 // EditOrDeleteProjectModal.jsx
-import PropTypes from "prop-types";
 import { Modal, Form, Input, Checkbox, Button } from "antd";
+import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
+import { useContext } from "react";
 
-const EditOrDeleteProjectModal = ({
-  actionTypeOnProject,
-  isVisible,
-  onCancel,
-  onEditSubmit,
-  onDelete,
-  form,
-}) => {
+const EditOrDeleteProjectModal = () => {
+  const {
+    actionTypeOnProject,
+    handleCancelForEditOrDeleteProject,
+    isEditOrDeleteProjectModalVisible,
+    handleEditProjectFormSubmit,
+    handleDeleteProject,
+    editOrDeleteProjectForm,
+  } = useContext(ProjectsAndTasksContext);
+
   return (
     <Modal
       title={actionTypeOnProject === "edit" ? "Edit Project" : "Delete Project"}
       // visible={isVisible}
-      open={isVisible}
-      onCancel={onCancel}
+      open={isEditOrDeleteProjectModalVisible}
+      onCancel={handleCancelForEditOrDeleteProject}
       footer={null}
     >
       {actionTypeOnProject === "edit" ? (
-        <Form form={form} layout="vertical" onFinish={onEditSubmit}>
+        <Form
+          form={editOrDeleteProjectForm}
+          layout="vertical"
+          onFinish={handleEditProjectFormSubmit}
+        >
           <Form.Item
             label="Project Title"
             name="name"
@@ -36,7 +43,7 @@ const EditOrDeleteProjectModal = ({
             <Button type="primary" htmlType="submit" style={{ marginRight: 8 }}>
               Save Changes
             </Button>
-            <Button onClick={onCancel}>Cancel</Button>
+            <Button onClick={handleCancelForEditOrDeleteProject}>Cancel</Button>
           </Form.Item>
         </Form>
       ) : (
@@ -45,25 +52,16 @@ const EditOrDeleteProjectModal = ({
           <Button
             type="primary"
             danger
-            onClick={onDelete}
+            onClick={handleDeleteProject}
             style={{ marginRight: 8 }}
           >
             Delete
           </Button>
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={handleCancelForEditOrDeleteProject}>Cancel</Button>
         </div>
       )}
     </Modal>
   );
-};
-
-EditOrDeleteProjectModal.propTypes = {
-  actionTypeOnProject: PropTypes.oneOf(["edit", "delete", ""]).isRequired,
-  isVisible: PropTypes.bool.isRequired,
-  onCancel: PropTypes.func.isRequired,
-  onEditSubmit: PropTypes.func,
-  onDelete: PropTypes.func,
-  form: PropTypes.object.isRequired,
 };
 
 export default EditOrDeleteProjectModal;

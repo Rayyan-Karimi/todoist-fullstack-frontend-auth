@@ -1,20 +1,20 @@
 // Single project's view
 import Index from "./Index";
-import AddTaskButton from "../util/AddTaskButton";
+import AddTaskModal from "../util/AddTaskModal";
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { List, Typography, Checkbox, Tooltip, message } from "antd";
+import { List, Typography, Checkbox, Tooltip, Button } from "antd";
 import { EditOutlined } from "@ant-design/icons";
-import PropTypes from "prop-types";
 
-import { TodoistApi } from "@doist/todoist-api-typescript";
-const apiToken = import.meta.env.VITE_TODOIST_API_TOKEN;
-const api = new TodoistApi(apiToken);
+import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
 
 const { Title, Text } = Typography;
 
-export default function IndividualProject({ tasks, projects, setTasks }) {
+export default function IndividualProject() {
+  const { projects, tasks, handleTaskEdit, handleDeleteTask } = useContext(
+    ProjectsAndTasksContext
+  );
   const { id } = useParams();
   const filteredTasks = tasks.filter((task) => task.projectId === id);
   const filteredProject = projects.find((project) => project.id === id);
@@ -28,42 +28,9 @@ export default function IndividualProject({ tasks, projects, setTasks }) {
   };
 
   const handleEditSave = async (updatedTask) => {
-    try {
-      const isSuccess = await api.updateTask(updatedTask.id, {
-        content: updatedTask.content,
-        description: updatedTask.description,
-        due_date: updatedTask.due_date,
-        priority: updatedTask.priority,
-      });
-
-      if (isSuccess) {
-        setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === updatedTask.id ? updatedTask : task
-          )
-        );
-        console.log("Task updated successfully");
-      }
-    } catch (error) {
-      console.error("Error updating task:", error);
-    } finally {
-      setIsEditing(false);
-      setEditingTask(null);
-    }
-  };
-
-  const handleDeleteTask = (theId) => {
-    api
-      .deleteTask(theId)
-      .then((isSuccess) => {
-        if (isSuccess) {
-          setTasks((prevTasks) =>
-            prevTasks.filter((task) => task.id !== theId)
-          );
-          message.success("Task deleted.");
-        }
-      })
-      .catch((error) => message.error("Error deleting task:", error));
+    handleTaskEdit(updatedTask);
+    setIsEditing(false);
+    setEditingTask(null);
   };
 
   return (
@@ -73,11 +40,18 @@ export default function IndividualProject({ tasks, projects, setTasks }) {
         margin: "auto",
         height: "80vh",
         overflowY: "auto",
-        width: "600px",
+        maxWidth: "600px",
       }}
     >
-      <Title level={2} style={{ marginBottom: "20px" }}>
-        {filteredProject && filteredProject.name}
+      <Title level={5}>
+        <Button
+          block={true}
+          size="large"
+          // onClick={editProjectTitle(filteredProject?.name)}
+          style={{ marginBottom: "20px" }}
+        >
+          {filteredProject && filteredProject.name}
+        </Button>
       </Title>
 
       {filteredTasks.length > 0 ? (
@@ -134,7 +108,7 @@ export default function IndividualProject({ tasks, projects, setTasks }) {
       )}
 
       {isEditing && (
-        <AddTaskButton
+        <AddTaskModal
           isEditing={isEditing}
           setIsEditing={setIsEditing}
           task={editingTask}
@@ -143,20 +117,9 @@ export default function IndividualProject({ tasks, projects, setTasks }) {
         />
       )}
       {!isEditing && (
-        <AddTaskButton
-          setTasks={setTasks}
-          setIsEditing={setIsEditing}
-          tasks={tasks}
-          projectId={id}
-        />
+        <AddTaskModal setIsEditing={setIsEditing} projectId={id} />
       )}
       {filteredTasks.length === 0 && <Index />}
     </div>
   );
 }
-
-IndividualProject.propTypes = {
-  tasks: PropTypes.array.isRequired,
-  projects: PropTypes.array.isRequired,
-  setTasks: PropTypes.func.isRequired,
-};

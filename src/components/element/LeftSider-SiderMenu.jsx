@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Menu } from "antd";
+import { Flex, Menu } from "antd";
 import AddProjectIcon from "../../assets/AddProjectIcon.svg";
 
 const SiderMenu = ({ menuItems, navigate, showAddProjectModal }) => {
@@ -21,18 +21,20 @@ const SiderMenu = ({ menuItems, navigate, showAddProjectModal }) => {
   ];
 
   return (
-    <Menu
-      mode="inline"
-      defaultSelectedKeys={["my-favorites"]}
-      defaultOpenKeys={["my-favorites"]}
-      onClick={({ key }) => {
-        const selectedItem = menuData.find((item) => item.key === key);
-        selectedItem?.onClick?.(); // Call the action if available
-        if (!selectedItem?.onClick) navigate(key);
-      }}
-      style={getSiderMenuStyle()}
-      items={menuData} // Use the new `items` prop
-    />
+    <Flex align="end">
+      <Menu
+        mode="inline"
+        defaultSelectedKeys={["my-favorites"]}
+        defaultOpenKeys={["my-favorites"]}
+        onClick={({ key }) => {
+          const selectedItem = menuData.find((item) => item.key === key);
+          selectedItem?.onClick?.(); // Call the action if available
+          if (!selectedItem?.onClick) navigate(key);
+        }}
+        style={getSiderMenuStyle()}
+        items={menuData} // Use the new `items` prop
+      />
+    </Flex>
   );
 };
 

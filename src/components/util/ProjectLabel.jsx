@@ -1,13 +1,10 @@
 import PropTypes from "prop-types";
-
+import { useContext } from "react";
 import ProjectActionsDropdown from "./ProjectActionsDropdown";
+import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
 
-const ProjectLabel = ({
-  project,
-  setSelectedProject,
-  handleUpdateFavoriteProjectStatus,
-  showProjectActionsModal,
-}) => {
+const ProjectLabel = ({ project }) => {
+  const { setSelectedProject } = useContext(ProjectsAndTasksContext);
   return (
     <div
       style={{
@@ -28,11 +25,7 @@ const ProjectLabel = ({
         {project.name}
       </div>
       <div style={{ display: "flex", gap: "8px" }}>
-        <ProjectActionsDropdown
-          project={project}
-          handleUpdateFavoriteProjectStatus={handleUpdateFavoriteProjectStatus}
-          showProjectActionsModal={showProjectActionsModal}
-        />
+        <ProjectActionsDropdown project={project} />
       </div>
     </div>
   );

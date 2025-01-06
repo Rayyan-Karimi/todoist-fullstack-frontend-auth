@@ -1,23 +1,55 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Button, Modal, Form, Input, DatePicker, Select, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { TodoistApi } from "@doist/todoist-api-typescript";
 import PropTypes from "prop-types";
+import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
 
 const { Option } = Select;
 const apiToken = import.meta.env.VITE_TODOIST_API_TOKEN;
 const api = new TodoistApi(apiToken);
 
-export default function AddTaskButton({
+export default function AddTaskModal({
   projectId,
-  setTasks,
   isEditing = false,
   setIsEditing,
   task = null,
   onSave,
 }) {
+  const { setTasks } = useContext(ProjectsAndTasksContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+
+  const handleAddTask = async (values) => {
+    const { content, description, due_date, priority } = values;
+    if (isEditing && task) {
+      onSave({
+        ...task,
+        content,
+        description,
+        due_date: due_date ? due_date.format("YYYY-MM-DD") : undefined,
+        priority,
+      });
+      form.resetFields();
+      return;
+    }
+    try {
+      const newTask = await api.addTask({
+        content,
+        description,
+        due_date: due_date ? due_date.format("YYYY-MM-DD") : undefined,
+        priority,
+        project_id: projectId,
+      });
+      message.success("Task added successfully!");
+      setTasks((prev) => [...prev, newTask]);
+      setIsModalVisible(false);
+      form.resetFields();
+    } catch (error) {
+      console.error(error);
+      message.error("Failed to add task. Please try again.");
+    }
+  };
 
   useEffect(() => {
     if (isEditing && task) {
@@ -30,54 +62,22 @@ export default function AddTaskButton({
     }
   }, [isEditing, task, form]);
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
   const handleCancel = () => {
     setIsModalVisible(false);
     setIsEditing?.(false);
     form.resetFields();
   };
 
-  const handleAddTask = async (values) => {
-    const { content, description, due_date, priority } = values;
-
-    if (isEditing && task) {
-      onSave({
-        ...task,
-        content,
-        description,
-        due_date: due_date ? due_date.format("YYYY-MM-DD") : undefined,
-        priority,
-      });
-      form.resetFields();
-      return;
-    }
-
-    try {
-      const newTask = await api.addTask({
-        content,
-        description,
-        due_date: due_date ? due_date.format("YYYY-MM-DD") : undefined,
-        priority,
-        project_id: projectId,
-      });
-
-      message.success("Task added successfully!");
-      setTasks((prev) => [...prev, newTask]);
-      setIsModalVisible(false);
-      form.resetFields();
-    } catch (error) {
-      console.error(error);
-      message.error("Failed to add task. Please try again.");
-    }
-  };
-
   return (
     <div>
       {!isEditing && (
-        <Button type="text" icon={<PlusOutlined />} onClick={showModal}>
+        <Button
+          type="text"
+          block={true}
+          style={{ display: "flex", justifyContent: "start" }}
+          icon={<PlusOutlined />}
+          onClick={() => setIsModalVisible(true)}
+        >
           Add Task
         </Button>
       )}
@@ -120,12 +120,11 @@ export default function AddTaskButton({
   );
 }
 
-AddTaskButton.propTypes = {
+AddTaskModal.propTypes = {
   projectId: PropTypes.string.isRequired,
-  tasks: PropTypes.array.isRequired,
   isEditing: PropTypes.bool,
   onSave: PropTypes.func,
   task: PropTypes.object,
-  setTasks: PropTypes.func.isRequired,
+  setTasks: PropTypes.func,
   setIsEditing: PropTypes.func.isRequired,
 };
