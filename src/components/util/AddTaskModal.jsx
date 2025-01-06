@@ -1,5 +1,13 @@
 import { useState, useEffect, useContext } from "react";
-import { Button, Modal, Form, Input, DatePicker, Select, message } from "antd";
+import {
+  Button,
+  Modal,
+  Form,
+  Input,
+  DatePicker,
+  Select,
+  message,
+} from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { TodoistApi } from "@doist/todoist-api-typescript";
 import PropTypes from "prop-types";
@@ -16,12 +24,13 @@ export default function AddTaskModal({
   task = null,
   onSave,
 }) {
-  const { setTasks } = useContext(ProjectsAndTasksContext);
+  const { setTasks, projects } = useContext(ProjectsAndTasksContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
   const handleAddTask = async (values) => {
-    const { content, description, due_date, priority } = values;
+    const { content, description, due_date, priority, formSelectedProject } =
+      values;
     if (isEditing && task) {
       onSave({
         ...task,
@@ -39,7 +48,7 @@ export default function AddTaskModal({
         description,
         due_date: due_date ? due_date.format("YYYY-MM-DD") : undefined,
         priority,
-        project_id: projectId,
+        project_id: formSelectedProject ? formSelectedProject : projectId,
       });
       message.success("Task added successfully!");
       setTasks((prev) => [...prev, newTask]);
@@ -76,7 +85,11 @@ export default function AddTaskModal({
           block={true}
           style={{ display: "flex", justifyContent: "start" }}
           icon={<PlusOutlined />}
-          onClick={() => setIsModalVisible(true)}
+          onClick={() => {
+            setIsModalVisible(true);
+            console.log("Projects", projects);
+          }}
+          // onClick={() => setIsEditing(true)}
         >
           Add Task
         </Button>
@@ -107,6 +120,15 @@ export default function AddTaskModal({
               <Option value={2}>Medium</Option>
               <Option value={3}>High</Option>
               <Option value={4}>Urgent</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Project" name="formSelectedProject">
+            <Select placeholder="Select project">
+              {projects.map((project) => (
+                <Option key={project.id} value={project.id}>
+                  {project.name}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item>
