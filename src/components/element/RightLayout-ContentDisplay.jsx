@@ -8,7 +8,17 @@ function ContentDisplay({ tasks, projects, setTasks }) {
     <Routes>
       <Route path="/" element={<Index />} />
       <Route
-        path="/projects/:id"
+        path="/my-projects/:id"
+        element={
+          <IndividualProject
+            tasks={tasks}
+            projects={projects}
+            setTasks={setTasks}
+          />
+        }
+      />
+      <Route
+        path="/my-favorites/:id"
         element={
           <IndividualProject
             tasks={tasks}

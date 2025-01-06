@@ -181,7 +181,7 @@ function App() {
               onClick={() => setSelectedProject(project)}
             />
           ),
-          key: `/projects/${project.id}`,
+          key: `/my-favorites/${project.id}`,
         })),
     },
     {
@@ -219,7 +219,7 @@ function App() {
             </div>
           </div>
         ),
-        key: `/projects/${project.id}`,
+        key: `/my-projects/${project.id}`,
       })),
     },
   ];
