@@ -1,13 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import {
-  Button,
-  Modal,
-  Form,
-  Input,
-  DatePicker,
-  Select,
-  message,
-} from "antd";
+import { Button, Modal, Form, Input, DatePicker, Select, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { TodoistApi } from "@doist/todoist-api-typescript";
 import PropTypes from "prop-types";
@@ -24,7 +16,7 @@ export default function AddTaskModal({
   task = null,
   onSave,
 }) {
-  const { setTasks, projects } = useContext(ProjectsAndTasksContext);
+  const { dispatchTasks, projects } = useContext(ProjectsAndTasksContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
@@ -51,7 +43,8 @@ export default function AddTaskModal({
         project_id: formSelectedProject ? formSelectedProject : projectId,
       });
       message.success("Task added successfully!");
-      setTasks((prev) => [...prev, newTask]);
+      dispatchTasks({ type: "ADD_TASK", payload: newTask });
+      // setTasks((prev) => [...prev, newTask]);
       setIsModalVisible(false);
       form.resetFields();
     } catch (error) {

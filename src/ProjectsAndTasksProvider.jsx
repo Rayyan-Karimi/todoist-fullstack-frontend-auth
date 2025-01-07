@@ -1,19 +1,20 @@
 import { createContext, useState, useEffect, useReducer } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
-import { TodoistApi } from "@doist/todoist-api-typescript";
+// Internal imports
 import projectsReducer from "./components/util/ProjectsReducer";
-
+import tasksReducer from "./components/util/TasksReducer";
+import { TodoistApi } from "@doist/todoist-api-typescript";
 // API setup
 const apiToken = import.meta.env.VITE_TODOIST_API_TOKEN;
 const api = new TodoistApi(apiToken);
 
 export const ProjectsAndTasksContext = createContext();
-
 export const ProjectsAndTasksProvider = ({ children }) => {
   // const [projects, setProjects] = useState([]);
+  // const [tasks, setTasks] = useState([]);
   const [projects, dispatchProjects] = useReducer(projectsReducer, []);
-  const [tasks, setTasks] = useState([]);
+  const [tasks, dispatchTasks] = useReducer(tasksReducer, []);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(null);
   const [isAddProjectModalVisible, setIsAddProjectModalVisible] =
@@ -162,8 +163,9 @@ export const ProjectsAndTasksProvider = ({ children }) => {
     Promise.all([api.getProjects(), api.getTasks()])
       .then(([fetchedProjects, fetchedTasks]) => {
         dispatchProjects({ type: "SET_PROJECTS", payload: fetchedProjects });
+        dispatchTasks({ type: "SET_TASKS", payload: fetchedTasks });
         // setProjects(fetchedProjects);
-        setTasks(fetchedTasks);
+        // setTasks(fetchedTasks);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -173,6 +175,9 @@ export const ProjectsAndTasksProvider = ({ children }) => {
       });
   }, []);
 
+  /**
+   * Task Handlers
+   */
   const handleTaskEdit = async (updatedTask) => {
     try {
       await api.updateTask(updatedTask.id, {
@@ -181,12 +186,12 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         due_date: updatedTask.due_date,
         priority: updatedTask.priority,
       });
-
-      setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id === updatedTask.id ? updatedTask : task
-        )
-      );
+      dispatchTasks({ type: "UPDATE_TASK", payload: updatedTask });
+      // setTasks((prevTasks) =>
+      //   prevTasks.map((task) =>
+      //     task.id === updatedTask.id ? updatedTask : task
+      //   )
+      // );
       console.log("Task updated successfully");
     } catch (error) {
       console.error("Error updating task:", error);
@@ -196,13 +201,12 @@ export const ProjectsAndTasksProvider = ({ children }) => {
   const handleDeleteTask = (theId) => {
     api
       .deleteTask(theId)
-      .then((isSuccess) => {
-        if (isSuccess) {
-          setTasks((prevTasks) =>
-            prevTasks.filter((task) => task.id !== theId)
-          );
-          message.success("Task deleted.");
-        }
+      .then(() => {
+        dispatchTasks({ type: "DELETE_TASK", payload: theId });
+        // setTasks((prevTasks) =>
+        //   prevTasks.filter((task) => task.id !== theId)
+        // );
+        message.success("Task deleted.");
       })
       .catch((error) => message.error("Error deleting task:", error));
   };
@@ -216,7 +220,8 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         isLoading,
         hasError,
         tasks,
-        setTasks,
+        dispatchTasks,
+        // setTasks,
         isAddProjectModalVisible,
         isEditOrDeleteProjectModalVisible,
         selectedProject,
