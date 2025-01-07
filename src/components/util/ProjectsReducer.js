@@ -1,5 +1,4 @@
 const projectsReducer = (projects, action) => {
-  console.log("Action", action)
   switch (action.type) {
     case 'SET_PROJECTS':
       return action.payload;
