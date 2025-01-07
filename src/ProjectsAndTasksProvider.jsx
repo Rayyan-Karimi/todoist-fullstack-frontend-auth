@@ -1,7 +1,8 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useReducer } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
 import { TodoistApi } from "@doist/todoist-api-typescript";
+import projectsReducer from "./components/util/ProjectsReducer";
 
 // API setup
 const apiToken = import.meta.env.VITE_TODOIST_API_TOKEN;
@@ -10,7 +11,8 @@ const api = new TodoistApi(apiToken);
 export const ProjectsAndTasksContext = createContext();
 
 export const ProjectsAndTasksProvider = ({ children }) => {
-  const [projects, setProjects] = useState([]);
+  // const [projects, setProjects] = useState([]);
+  const [projects, dispatchProjects] = useReducer(projectsReducer, []);
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(null);
@@ -36,7 +38,8 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         name: projectTitle,
         isFavorite,
       });
-      setProjects((prev) => [...prev, newProject]);
+      dispatchProjects({ type: "ADD_PROJECT", payload: newProject });
+      // setProjects((prev) => [...prev, newProject]);
       setIsAddProjectModalVisible(false);
       // addProjectForm.resetFields();
     } catch (err) {
@@ -47,14 +50,16 @@ export const ProjectsAndTasksProvider = ({ children }) => {
   const handleEditProjectFormSubmit = async (values) => {
     try {
       const updatedProject = await api.updateProject(selectedProject.id, {
+        id: selectedProject.id,
         name: values.name,
         isFavorite: values.isFavorite,
       });
-      setProjects((prev) =>
-        prev.map((project) =>
-          project.id !== updatedProject.id ? project : updatedProject
-        )
-      );
+      dispatchProjects({ type: "UPDATE_PROJECT", payload: updatedProject });
+      // setProjects((prev) =>
+      //   prev.map((project) =>
+      //     project.id !== updatedProject.id ? project : updatedProject
+      //   )
+      // );
 
       editOrDeleteProjectForm.resetFields();
       message.success("Updated project successfully.");
@@ -72,11 +77,12 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         isFavorite: !selectedProject.isFavorite,
       };
       await api.updateProject(selectedProject.id, updatedProject);
-      setProjects((prev) =>
-        prev.map((project) =>
-          project.id !== updatedProject.id ? project : updatedProject
-        )
-      );
+      dispatchProjects({ type: "UPDATE_PROJECT", payload: updatedProject });
+      // setProjects((prev) =>
+      //   prev.map((project) =>
+      //     project.id !== updatedProject.id ? project : updatedProject
+      //   )
+      // );
       message.success("Updated favorite successfully.");
     } catch (err) {
       message.error("Error updating favorite:", err);
@@ -92,11 +98,12 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         name: value,
       };
       await api.updateProject(selectedProject.id, updatedProject);
-      setProjects((prev) =>
-        prev.map((project) =>
-          project.id !== updatedProject.id ? project : updatedProject
-        )
-      );
+      dispatchProjects({ type: "UPDATE_PROJECT", payload: updatedProject });
+      // setProjects((prev) =>
+      //   prev.map((project) =>
+      //     project.id !== updatedProject.id ? project : updatedProject
+      //   )
+      // );
       message.success("Updated project name successfully.");
     } catch (err) {
       message.error("Error updating project name:", err);
@@ -108,9 +115,13 @@ export const ProjectsAndTasksProvider = ({ children }) => {
   const handleDeleteProject = async () => {
     try {
       await api.deleteProject(selectedProject.id);
-      setProjects((prev) =>
-        prev.filter((project) => project.id !== selectedProject.id)
-      );
+      dispatchProjects({
+        type: "DELETE_PROJECT",
+        payload: selectedProject.id,
+      });
+      // setProjects((prev) =>
+      //   prev.filter((project) => project.id !== selectedProject.id)
+      // );
       message.success("Deleted project successfully.");
     } catch (err) {
       message.error("Error deleting project:", err);
@@ -150,7 +161,8 @@ export const ProjectsAndTasksProvider = ({ children }) => {
     setIsLoading(true);
     Promise.all([api.getProjects(), api.getTasks()])
       .then(([fetchedProjects, fetchedTasks]) => {
-        setProjects(fetchedProjects);
+        dispatchProjects({ type: "SET_PROJECTS", payload: fetchedProjects });
+        // setProjects(fetchedProjects);
         setTasks(fetchedTasks);
         setIsLoading(false);
       })
