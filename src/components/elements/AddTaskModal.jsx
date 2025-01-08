@@ -4,10 +4,11 @@ import { PlusOutlined } from "@ant-design/icons";
 import { TodoistApi } from "@doist/todoist-api-typescript";
 import PropTypes from "prop-types";
 import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
+import { useDispatch } from "react-redux";
 
 const { Option } = Select;
-const apiToken = import.meta.env.VITE_TODOIST_API_TOKEN;
-const api = new TodoistApi(apiToken);
+import { addTask } from "../../features/tasksSlice";
+import { addTaskViaApi } from "../../service/apiService";
 
 export default function AddTaskModal({
   projectId,
@@ -16,9 +17,10 @@ export default function AddTaskModal({
   task = null,
   onSave,
 }) {
-  const { dispatchTasks, projects } = useContext(ProjectsAndTasksContext);
+  const { projects } = useContext(ProjectsAndTasksContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const dispatch = useDispatch();
 
   const handleAddTask = async (values) => {
     const { content, description, due_date, priority, formSelectedProject } =
@@ -35,7 +37,7 @@ export default function AddTaskModal({
       return;
     }
     try {
-      const newTask = await api.addTask({
+      const newTask = await addTaskViaApi({
         content,
         description,
         due_date: due_date ? due_date.format("YYYY-MM-DD") : undefined,
@@ -43,8 +45,7 @@ export default function AddTaskModal({
         project_id: formSelectedProject ? formSelectedProject : projectId,
       });
       message.success("Task added successfully!");
-      dispatchTasks({ type: "ADD_TASK", payload: newTask });
-      // setTasks((prev) => [...prev, newTask]);
+      dispatch(addTask(newTask));
       setIsModalVisible(false);
       form.resetFields();
     } catch (error) {

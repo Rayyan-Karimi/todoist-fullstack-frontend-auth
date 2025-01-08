@@ -7,23 +7,22 @@ const EditOrDeleteProjectModal = () => {
   const {
     actionTypeOnProject,
     handleCancelForEditOrDeleteProject,
-    isEditOrDeleteProjectModalVisible,
+    editOrDeleteProjectModal,
     handleEditProjectFormSubmit,
     handleDeleteProject,
-    editOrDeleteProjectForm,
   } = useContext(ProjectsAndTasksContext);
 
   return (
     <Modal
       title={actionTypeOnProject === "edit" ? "Edit Project" : "Delete Project"}
       // visible={isVisible}
-      open={isEditOrDeleteProjectModalVisible}
+      open={editOrDeleteProjectModal.isVisible}
       onCancel={handleCancelForEditOrDeleteProject}
       footer={null}
     >
       {actionTypeOnProject === "edit" ? (
         <Form
-          form={editOrDeleteProjectForm}
+          form={editOrDeleteProjectModal.form}
           layout="vertical"
           onFinish={handleEditProjectFormSubmit}
         >

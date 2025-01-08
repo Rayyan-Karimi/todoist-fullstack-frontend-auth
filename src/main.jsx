@@ -4,13 +4,17 @@ import "./index.css";
 import App from "./App.jsx";
 import { ProjectsAndTasksProvider } from "./ProjectsAndTasksProvider.jsx";
 import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import { store } from "./store/store.js";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ProjectsAndTasksProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </ProjectsAndTasksProvider>
+    <Provider store={store}>
+      <ProjectsAndTasksProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ProjectsAndTasksProvider>
+    </Provider>
   </StrictMode>
 );

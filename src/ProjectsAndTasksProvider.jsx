@@ -1,48 +1,58 @@
-import { createContext, useState, useEffect, useReducer } from "react";
+import { createContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Form, message } from "antd";
+import { message } from "antd";
+
 // Internal imports
-import projectsReducer from "./components/elements/ProjectsReducer";
-import tasksReducer from "./components/elements/TasksReducer";
-import { TodoistApi } from "@doist/todoist-api-typescript";
-// API setup
-const apiToken = import.meta.env.VITE_TODOIST_API_TOKEN;
-const api = new TodoistApi(apiToken);
+import { useModal } from "./hooks/useModal";
+import {
+  getProjectsViaApi,
+  addProjectViaApi,
+  updateProjectViaApi,
+  deleteProjectViaApi,
+  getTasksViaApi,
+  updateTaskViaApi,
+  deleteTaskViaApi,
+} from "./service/apiService";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setProjects,
+  addProject,
+  updateProjects,
+  deleteProject,
+  setIsLoading,
+  setHasError,
+} from "./features/projectsSlice";
+import { setTasks, updateTask, deleteTask } from "./features/tasksSlice";
+// import tasksReducer from "./store/TasksReducer";
 
 export const ProjectsAndTasksContext = createContext();
 export const ProjectsAndTasksProvider = ({ children }) => {
-  // const [projects, setProjects] = useState([]);
-  // const [tasks, setTasks] = useState([]);
-  const [projects, dispatchProjects] = useReducer(projectsReducer, []);
-  const [tasks, dispatchTasks] = useReducer(tasksReducer, []);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasError, setHasError] = useState(null);
-  const [isAddProjectModalVisible, setIsAddProjectModalVisible] =
-    useState(false);
-  const [
-    isEditOrDeleteProjectModalVisible,
-    setIsEditOrDeleteProjectModalVisible,
-  ] = useState(false);
+  // Redux-ing
+  const { projects, isLoading, hasError } = useSelector(
+    (state) => state.projects
+  );
+  const { tasks } = useSelector((state) => state.tasks);
+  const dispatch = useDispatch();
+
+  const addProjectModal = useModal();
+  const editOrDeleteProjectModal = useModal();
+
   const [selectedProject, setSelectedProject] = useState(null);
   const [actionTypeOnProject, setActionTypeOnProject] = useState("");
-  const addProjectForm = Form.useForm();
-  const [editOrDeleteProjectForm] = Form.useForm();
 
   /**
    * Project state handlers
    */
-
   const handleFormSubmitForAddProject = async (values) => {
     const { projectTitle, isFavorite } = values;
     try {
-      const newProject = await api.addProject({
+      const newProject = await addProjectViaApi({
         name: projectTitle,
         isFavorite,
       });
-      dispatchProjects({ type: "ADD_PROJECT", payload: newProject });
-      // setProjects((prev) => [...prev, newProject]);
-      setIsAddProjectModalVisible(false);
-      // addProjectForm.resetFields();
+      dispatch(addProject(newProject));
+      addProjectModal.hideModal();
+      addProjectModal.form.resetFields();
     } catch (err) {
       console.error("Error adding project:", err);
     }
@@ -50,19 +60,13 @@ export const ProjectsAndTasksProvider = ({ children }) => {
 
   const handleEditProjectFormSubmit = async (values) => {
     try {
-      const updatedProject = await api.updateProject(selectedProject.id, {
+      const updatedProject = await updateProjectViaApi(selectedProject.id, {
         id: selectedProject.id,
         name: values.name,
         isFavorite: values.isFavorite,
       });
-      dispatchProjects({ type: "UPDATE_PROJECT", payload: updatedProject });
-      // setProjects((prev) =>
-      //   prev.map((project) =>
-      //     project.id !== updatedProject.id ? project : updatedProject
-      //   )
-      // );
-
-      editOrDeleteProjectForm.resetFields();
+      dispatch(updateProjects(updatedProject));
+      editOrDeleteProjectModal.form.resetFields();
       message.success("Updated project successfully.");
     } catch (err) {
       message.error("Error updating project:", err);
@@ -77,13 +81,8 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         ...selectedProject,
         isFavorite: !selectedProject.isFavorite,
       };
-      await api.updateProject(selectedProject.id, updatedProject);
-      dispatchProjects({ type: "UPDATE_PROJECT", payload: updatedProject });
-      // setProjects((prev) =>
-      //   prev.map((project) =>
-      //     project.id !== updatedProject.id ? project : updatedProject
-      //   )
-      // );
+      await updateProjectViaApi(selectedProject.id, updatedProject);
+      dispatch(updateProjects(updatedProject));
       message.success("Updated favorite successfully.");
     } catch (err) {
       message.error("Error updating favorite:", err);
@@ -98,13 +97,8 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         ...selectedProject,
         name: value,
       };
-      await api.updateProject(selectedProject.id, updatedProject);
-      dispatchProjects({ type: "UPDATE_PROJECT", payload: updatedProject });
-      // setProjects((prev) =>
-      //   prev.map((project) =>
-      //     project.id !== updatedProject.id ? project : updatedProject
-      //   )
-      // );
+      await updateProjectViaApi(selectedProject.id, updatedProject);
+      dispatch(updateProjects(updatedProject));
       message.success("Updated project name successfully.");
     } catch (err) {
       message.error("Error updating project name:", err);
@@ -115,14 +109,8 @@ export const ProjectsAndTasksProvider = ({ children }) => {
 
   const handleDeleteProject = async () => {
     try {
-      await api.deleteProject(selectedProject.id);
-      dispatchProjects({
-        type: "DELETE_PROJECT",
-        payload: selectedProject.id,
-      });
-      // setProjects((prev) =>
-      //   prev.filter((project) => project.id !== selectedProject.id)
-      // );
+      await deleteProjectViaApi(selectedProject.id);
+      dispatch(deleteProject(selectedProject.id));
       message.success("Deleted project successfully.");
     } catch (err) {
       message.error("Error deleting project:", err);
@@ -132,80 +120,70 @@ export const ProjectsAndTasksProvider = ({ children }) => {
   };
 
   const handleCancelForEditOrDeleteProject = () => {
-    setIsEditOrDeleteProjectModalVisible(false);
+    editOrDeleteProjectModal.hideModal();
     setSelectedProject(null);
     setActionTypeOnProject("");
-    // editOrDeleteProjectForm.resetFields();
+    editOrDeleteProjectModal.form.resetFields();
   };
 
   const showAddProjectModal = () => {
-    setIsAddProjectModalVisible(true);
+    addProjectModal.showModal();
   };
 
   const handleModalCancelForAddProject = () => {
-    setIsAddProjectModalVisible(false);
+    addProjectModal.hideModal();
+    addProjectModal.form.resetFields();
   };
 
   const showProjectActionsModal = (project, type) => {
     setSelectedProject(project);
     setActionTypeOnProject(type); // 'edit' or 'delete'
-    setIsEditOrDeleteProjectModalVisible(true);
+    editOrDeleteProjectModal.showModal();
     if (type === "edit") {
-      editOrDeleteProjectForm.setFieldsValue({
-        name: project.name,
-        isFavorite: project.isFavorite,
+      editOrDeleteProjectModal.form.setFieldsValue({
+        name: selectedProject.name,
+        isFavorite: selectedProject.isFavorite,
       });
     }
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    Promise.all([api.getProjects(), api.getTasks()])
+    dispatch(setIsLoading(true));
+    Promise.all([getProjectsViaApi(), getTasksViaApi()])
       .then(([fetchedProjects, fetchedTasks]) => {
-        dispatchProjects({ type: "SET_PROJECTS", payload: fetchedProjects });
-        dispatchTasks({ type: "SET_TASKS", payload: fetchedTasks });
-        // setProjects(fetchedProjects);
-        // setTasks(fetchedTasks);
-        setIsLoading(false);
+        dispatch(setProjects(fetchedProjects));
+        dispatch(setTasks(fetchedTasks));
+        dispatch(setIsLoading(false));
       })
       .catch((error) => {
         message.error("Error while fetching data from API:", error);
-        setHasError(true);
-        setIsLoading(false);
+        dispatch(setHasError(true));
+        dispatch(setIsLoading(false));
       });
-  }, []);
+  }, [dispatch]);
 
   /**
    * Task Handlers
    */
   const handleTaskEdit = async (updatedTask) => {
     try {
-      await api.updateTask(updatedTask.id, {
+      await updateTaskViaApi(updatedTask.id, {
         content: updatedTask.content,
         description: updatedTask.description,
         due_date: updatedTask.due_date,
         priority: updatedTask.priority,
       });
-      dispatchTasks({ type: "UPDATE_TASK", payload: updatedTask });
-      // setTasks((prevTasks) =>
-      //   prevTasks.map((task) =>
-      //     task.id === updatedTask.id ? updatedTask : task
-      //   )
-      // );
-      console.log("Task updated successfully");
+      dispatch(updateTask(updatedTask));
+      message.success("Task updated successfully");
     } catch (error) {
       console.error("Error updating task:", error);
     }
   };
 
-  const handleDeleteTask = (theId) => {
-    api
-      .deleteTask(theId)
+  const handleDeleteTask = async (theId) => {
+    await deleteTaskViaApi(theId)
       .then(() => {
-        dispatchTasks({ type: "DELETE_TASK", payload: theId });
-        // setTasks((prevTasks) =>
-        //   prevTasks.filter((task) => task.id !== theId)
-        // );
+        dispatch(deleteTask(theId));
         message.success("Task deleted.");
       })
       .catch((error) => message.error("Error deleting task:", error));
@@ -220,18 +198,15 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         isLoading,
         hasError,
         tasks,
-        dispatchTasks,
-        // setTasks,
-        isAddProjectModalVisible,
-        isEditOrDeleteProjectModalVisible,
+        dispatch,
+        addProjectModal,
+        editOrDeleteProjectModal,
         selectedProject,
         setSelectedProject,
         actionTypeOnProject,
         handleFormSubmitForAddProject,
         handleEditProjectFormSubmit,
         handleCancelForEditOrDeleteProject,
-        addProjectForm,
-        editOrDeleteProjectForm,
         handleUpdateFavoriteProjectStatus,
         handleDeleteProject,
         showAddProjectModal,

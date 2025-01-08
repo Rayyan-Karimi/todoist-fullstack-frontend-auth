@@ -5,8 +5,7 @@ import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
 
 const AddProjectModal = () => {
   const {
-    addProjectForm,
-    isAddProjectModalVisible,
+    addProjectModal,
     handleModalCancelForAddProject,
     handleFormSubmitForAddProject,
   } = useContext(ProjectsAndTasksContext);
@@ -14,12 +13,13 @@ const AddProjectModal = () => {
   return (
     <Modal
       title="Add New Project"
-      open={isAddProjectModalVisible}
+      open={addProjectModal.isVisible}
       onCancel={handleModalCancelForAddProject}
       footer={null} // Use Form buttons instead
     >
       <Form
-        name={"addProjectForm"}
+        // name={"addProjectForm"}
+        form={addProjectModal.form}
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         initialValues={{ remember: true }}
