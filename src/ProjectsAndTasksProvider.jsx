@@ -2,8 +2,8 @@ import { createContext, useState, useEffect, useReducer } from "react";
 import PropTypes from "prop-types";
 import { Form, message } from "antd";
 // Internal imports
-import projectsReducer from "./components/util/ProjectsReducer";
-import tasksReducer from "./components/util/TasksReducer";
+import projectsReducer from "./components/elements/ProjectsReducer";
+import tasksReducer from "./components/elements/TasksReducer";
 import { TodoistApi } from "@doist/todoist-api-typescript";
 // API setup
 const apiToken = import.meta.env.VITE_TODOIST_API_TOKEN;

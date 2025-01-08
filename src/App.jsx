@@ -6,13 +6,13 @@ import { Layout } from "antd";
 import { useMediaQuery } from "react-responsive";
 
 // Imports of self made items
-import ProjectLabel from "./components/util/ProjectLabel";
-import AddProjectModal from "./components/util/AddProjectModal";
-import EditOrDeleteProjectModal from "./components/util/EditOrDeleteProjectModal";
-import ProjectActionsDropdown from "./components/util/ProjectActionsDropdown";
-import LeftSiderSmall from "./components/element/LeftSider";
-import RightLayout from "./components/element/RightLayout";
-import LeftSiderToggle from "./components/element/LeftSider-ToggleForLeftSider";
+import ProjectLabel from "./components/elements/ProjectLabel";
+import AddProjectModal from "./components/elements/AddProjectModal";
+import EditOrDeleteProjectModal from "./components/elements/EditOrDeleteProjectModal";
+import ProjectActionsDropdown from "./components/elements/ProjectActionsDropdown";
+import LeftSiderSmall from "./components/ui/LeftSider";
+import RightLayout from "./components/ui/RightLayout";
+import LeftSiderToggle from "./components/ui/LeftSider-ToggleForLeftSider";
 import { ProjectsAndTasksContext } from "./ProjectsAndTasksProvider";
 
 // App function

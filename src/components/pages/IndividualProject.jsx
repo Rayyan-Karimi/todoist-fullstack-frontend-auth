@@ -1,6 +1,6 @@
 // Single project's view
 import Index from "./Index";
-import AddTaskModal from "../util/AddTaskModal";
+import AddTaskModal from "../elements/AddTaskModal";
 
 import { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
