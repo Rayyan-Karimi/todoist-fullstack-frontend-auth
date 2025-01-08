@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { Button, Modal, Form, Input, DatePicker, Select, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { TodoistApi } from "@doist/todoist-api-typescript";
 import PropTypes from "prop-types";
 import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
 import { useDispatch } from "react-redux";
