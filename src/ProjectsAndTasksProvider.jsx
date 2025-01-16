@@ -4,6 +4,7 @@ import { message } from "antd";
 
 // Internal imports
 import { useModal } from "./hooks/useModal";
+
 import {
   getProjectsViaApi,
   addProjectViaApi,
@@ -13,7 +14,9 @@ import {
   updateTaskViaApi,
   deleteTaskViaApi,
 } from "./service/apiService";
+
 import { useSelector, useDispatch } from "react-redux";
+
 import {
   setProjects,
   addProject,
@@ -22,23 +25,28 @@ import {
   setIsLoading,
   setHasError,
 } from "./features/projectsSlice";
+
 import { setTasks, updateTask, deleteTask } from "./features/tasksSlice";
-// import tasksReducer from "./store/TasksReducer";
 
 export const ProjectsAndTasksContext = createContext();
+
 export const ProjectsAndTasksProvider = ({ children }) => {
   // Redux-ing
   const { projects, isLoading, hasError } = useSelector(
     (state) => state.projects
   );
+
   const { tasks } = useSelector((state) => state.tasks);
   const dispatch = useDispatch();
 
   const addProjectModal = useModal();
+
   const editOrDeleteProjectModal = useModal();
 
   const [selectedProject, setSelectedProject] = useState(null);
+
   const [actionTypeOnProject, setActionTypeOnProject] = useState("");
+
 
   /**
    * Project state handlers
@@ -161,6 +169,8 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         dispatch(setIsLoading(false));
       });
   }, [dispatch]);
+// import tasksReducer from "./store/TasksReducer";
+
 
   /**
    * Task Handlers
@@ -180,6 +190,7 @@ export const ProjectsAndTasksProvider = ({ children }) => {
     }
   };
 
+
   const handleDeleteTask = async (theId) => {
     await deleteTaskViaApi(theId)
       .then(() => {
@@ -188,6 +199,7 @@ export const ProjectsAndTasksProvider = ({ children }) => {
       })
       .catch((error) => message.error("Error deleting task:", error));
   };
+
 
   return (
     <ProjectsAndTasksContext.Provider

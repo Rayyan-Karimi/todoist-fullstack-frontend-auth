@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+
 const initialState = {
     projects: [],
     isLoading: false,
@@ -32,5 +33,6 @@ const projectsSlice = createSlice({
         }
     }
 });
+
 export const { setProjects, addProject, updateProjects, deleteProject, setIsLoading, setHasError } = projectsSlice.actions;
 export default projectsSlice.reducer;
