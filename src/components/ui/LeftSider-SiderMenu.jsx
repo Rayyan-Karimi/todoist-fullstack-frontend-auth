@@ -21,11 +21,12 @@ const SiderMenu = ({ menuItems, navigate, showAddProjectModal }) => {
   ];
 
   return (
+    <>
     <Flex align="end">
       <Menu
         mode="inline"
-        defaultSelectedKeys={["my-favorites"]}
-        defaultOpenKeys={["my-favorites"]}
+        defaultSelectedKeys={["my-projects"]}
+        defaultOpenKeys={["my-projects"]}
         onClick={({ key }) => {
           const selectedItem = menuData.find((item) => item.key === key);
           selectedItem?.onClick?.(); // Call the action if available
@@ -33,8 +34,10 @@ const SiderMenu = ({ menuItems, navigate, showAddProjectModal }) => {
         }}
         style={getSiderMenuStyle()}
         items={menuData} // Use the new `items` prop
+        className="bg-white"
       />
     </Flex>
+    </>
   );
 };
 
@@ -49,6 +52,8 @@ const getSiderMenuStyle = () => ({
   padding: 0,
   background: "inherit",
   border: "none",
+  maxHeight: "80vh" /* Set your desired max height */,
+  overflowY: "auto",
 });
 
 export default SiderMenu;

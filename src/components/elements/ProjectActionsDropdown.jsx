@@ -12,8 +12,11 @@ import {
 import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
 
 const ProjectActionsDropdown = ({ project }) => {
-  const { handleUpdateFavoriteProjectStatus, showProjectActionsModal } =
-    useContext(ProjectsAndTasksContext);
+  const {
+    // handleUpdateFavoriteProjectStatus,
+    updateProjectFavorite,
+    showProjectActionsModal,
+  } = useContext(ProjectsAndTasksContext);
   const menu = {
     items: [
       {
@@ -48,7 +51,8 @@ const ProjectActionsDropdown = ({ project }) => {
             {project.isFavorite ? `Remove From Favorites` : `Add To Favorites`}
           </>
         ),
-        onClick: () => handleUpdateFavoriteProjectStatus(project),
+        onClick: () => updateProjectFavorite(project),
+        // onClick: () => handleUpdateFavoriteProjectStatus(project),
       },
     ],
   };
@@ -72,7 +76,7 @@ ProjectActionsDropdown.propTypes = {
   project: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     name: PropTypes.string.isRequired,
-    isFavorite: PropTypes.bool.isRequired,
+    isFavorite: PropTypes.any,
   }).isRequired,
 };
 

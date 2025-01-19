@@ -14,13 +14,19 @@ const projectsSlice = createSlice({
             state.projects = action.payload
         },
         addProject(state, action) {
+            console.log("ADDING PROJ- State action payload", action.payload)
             state.projects.push(action.payload)
         },
         updateProjects(state, action) {
-            const index = state.projects.findIndex((project) => project.id === action.payload.id)
-            if (index !== -1) {
-                state.projects[index] = action.payload
+            console.log('Action payload in slice...', action.payload)
+            console.log("Projects", state.projects)
+            state.projects = state.projects.map(project => {
+                if (project.id == action.payload.id) {
+                    console.log("yayayyayyayayaayayayyayaayayayayayayay", action.payload);
+                }
+                return project.id === action.payload.id ? action.payload : project
             }
+            );
         },
         deleteProject(state, action) {
             state.projects = state.projects.filter((project) => project.id !== action.payload)

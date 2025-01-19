@@ -22,29 +22,35 @@ export default function AddTaskModal({
   const dispatch = useDispatch();
 
   const handleAddTask = async (values) => {
-    const { content, description, due_date, priority, formSelectedProject } =
+    const { content, description, dueDate, priority, formSelectedProject } =
       values;
+    console.log("adding.", values);
     if (isEditing && task) {
+      console.log("editing. values", values, "to task", task);
       onSave({
         ...task,
         content,
         description,
-        due_date: due_date ? due_date.format("YYYY-MM-DD") : undefined,
+        dueDate: dueDate ? dueDate.format("YYYY-MM-DD") : undefined,
         priority,
+        projectId: task.projectId || projectId,
       });
       form.resetFields();
       return;
     }
     try {
+      console.log("adding task in add task modal");
       const newTask = await addTaskViaApi({
         content,
         description,
-        due_date: due_date ? due_date.format("YYYY-MM-DD") : undefined,
+        dueDate: dueDate ? dueDate.format("YYYY-MM-DD") : undefined,
         priority,
-        project_id: formSelectedProject ? formSelectedProject : projectId,
+        projectId: formSelectedProject ? formSelectedProject : projectId,
       });
+      console.log("attempted addition of task. new task on attempt :", newTask);
       message.success("Task added successfully!");
-      dispatch(addTask(newTask));
+      
+      dispatch(addTask(newTask.addition));
       setIsModalVisible(false);
       form.resetFields();
     } catch (error) {
@@ -58,7 +64,7 @@ export default function AddTaskModal({
       form.setFieldsValue({
         content: task.content,
         description: task.description,
-        due_date: task.due_date ? task.due_date : null,
+        dueDate: task.dueDate ? task.dueDate : null,
         priority: task.priority || 1,
       });
     }
@@ -80,7 +86,6 @@ export default function AddTaskModal({
           icon={<PlusOutlined />}
           onClick={() => {
             setIsModalVisible(true);
-            console.log("Projects", projects);
           }}
           // onClick={() => setIsEditing(true)}
         >
@@ -136,10 +141,9 @@ export default function AddTaskModal({
 }
 
 AddTaskModal.propTypes = {
-  projectId: PropTypes.string.isRequired,
+  projectId: PropTypes.number,
   isEditing: PropTypes.bool,
+  setIsEditing: PropTypes.func,
   onSave: PropTypes.func,
   task: PropTypes.object,
-  setTasks: PropTypes.func,
-  setIsEditing: PropTypes.func.isRequired,
 };

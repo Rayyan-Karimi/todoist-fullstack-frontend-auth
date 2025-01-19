@@ -13,6 +13,7 @@ import {
   getTasksViaApi,
   updateTaskViaApi,
   deleteTaskViaApi,
+  updateProjectFavoriteViaApi,
 } from "./service/apiService";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -47,7 +48,6 @@ export const ProjectsAndTasksProvider = ({ children }) => {
 
   const [actionTypeOnProject, setActionTypeOnProject] = useState("");
 
-
   /**
    * Project state handlers
    */
@@ -59,6 +59,7 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         isFavorite,
       });
       dispatch(addProject(newProject));
+      message.success("Added project successfully.");
       addProjectModal.hideModal();
       addProjectModal.form.resetFields();
     } catch (err) {
@@ -68,11 +69,13 @@ export const ProjectsAndTasksProvider = ({ children }) => {
 
   const handleEditProjectFormSubmit = async (values) => {
     try {
+      console.log("handle edit project for form submit");
       const updatedProject = await updateProjectViaApi(selectedProject.id, {
         id: selectedProject.id,
         name: values.name,
         isFavorite: values.isFavorite,
       });
+      console.log("--------------", updatedProject);
       dispatch(updateProjects(updatedProject));
       editOrDeleteProjectModal.form.resetFields();
       message.success("Updated project successfully.");
@@ -83,13 +86,16 @@ export const ProjectsAndTasksProvider = ({ children }) => {
     }
   };
 
-  const handleUpdateFavoriteProjectStatus = async () => {
+  const updateProjectFavorite = async () => {
+    // const handleUpdateFavoriteProjectStatus = async () => {
+    console.log("trying to change favotire");
     try {
       const updatedProject = {
         ...selectedProject,
         isFavorite: !selectedProject.isFavorite,
       };
-      await updateProjectViaApi(selectedProject.id, updatedProject);
+      console.log("here reached.", updatedProject);
+      await updateProjectFavoriteViaApi(selectedProject.id, updatedProject); //========================
       dispatch(updateProjects(updatedProject));
       message.success("Updated favorite successfully.");
     } catch (err) {
@@ -131,7 +137,7 @@ export const ProjectsAndTasksProvider = ({ children }) => {
     editOrDeleteProjectModal.hideModal();
     setSelectedProject(null);
     setActionTypeOnProject("");
-    editOrDeleteProjectModal.form.resetFields();
+    // editOrDeleteProjectModal.form.resetFields();
   };
 
   const showAddProjectModal = () => {
@@ -169,8 +175,7 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         dispatch(setIsLoading(false));
       });
   }, [dispatch]);
-// import tasksReducer from "./store/TasksReducer";
-
+  // import tasksReducer from "./store/TasksReducer";
 
   /**
    * Task Handlers
@@ -180,8 +185,9 @@ export const ProjectsAndTasksProvider = ({ children }) => {
       await updateTaskViaApi(updatedTask.id, {
         content: updatedTask.content,
         description: updatedTask.description,
-        due_date: updatedTask.due_date,
+        dueDate: updatedTask.dueDate,
         priority: updatedTask.priority,
+        projectId: updatedTask.projectId,
       });
       dispatch(updateTask(updatedTask));
       message.success("Task updated successfully");
@@ -190,8 +196,8 @@ export const ProjectsAndTasksProvider = ({ children }) => {
     }
   };
 
-
   const handleDeleteTask = async (theId) => {
+    console.log("handleDeleteTask in Provider");
     await deleteTaskViaApi(theId)
       .then(() => {
         dispatch(deleteTask(theId));
@@ -199,7 +205,6 @@ export const ProjectsAndTasksProvider = ({ children }) => {
       })
       .catch((error) => message.error("Error deleting task:", error));
   };
-
 
   return (
     <ProjectsAndTasksContext.Provider
@@ -219,7 +224,8 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         handleFormSubmitForAddProject,
         handleEditProjectFormSubmit,
         handleCancelForEditOrDeleteProject,
-        handleUpdateFavoriteProjectStatus,
+        // handleUpdateFavoriteProjectStatus,
+        updateProjectFavorite,
         handleDeleteProject,
         showAddProjectModal,
         handleModalCancelForAddProject,

@@ -35,11 +35,11 @@ ProjectLabel.propTypes = {
   project: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     name: PropTypes.string.isRequired,
-    isFavorite: PropTypes.bool.isRequired,
+    isFavorite: PropTypes.any.isRequired,
   }).isRequired,
   setSelectedProject: PropTypes.func.isRequired,
   showProjectActionsModal: PropTypes.func.isRequired,
-  handleUpdateFavoriteProjectStatus: PropTypes.func.isRequired,
+  handleUpdateFavoriteProjectStatus: PropTypes.func,
 };
 
 export default ProjectLabel;

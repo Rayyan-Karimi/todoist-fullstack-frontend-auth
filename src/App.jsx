@@ -34,7 +34,7 @@ function App() {
   if (isLoading) {
     return <>Loading...</>;
   } else if (hasError) {
-    return <>Error loading data. Please check Login Token.</>;
+    return <>Error loading data. Please check Login Token. API fetch error.</>;
   }
 
   const menuItems = [

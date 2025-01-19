@@ -15,7 +15,9 @@ export default function IndividualProject() {
   const { projects, tasks, handleTaskEdit, handleDeleteTask } = useContext(
     ProjectsAndTasksContext
   );
-  const { id } = useParams();
+  let { id } = useParams();
+  id = Number.parseInt(id);
+
   const filteredTasks = tasks.filter((task) => task.projectId === id);
   const filteredProject = projects.find((project) => project.id === id);
 
@@ -60,7 +62,7 @@ export default function IndividualProject() {
           renderItem={(task) => (
             <List.Item
               style={{
-                padding: "10px 0",
+                padding: "10px 0px",
                 alignItems: "flex-start",
                 borderBottom: "1px solid #ddd",
                 display: "flex",
@@ -72,6 +74,10 @@ export default function IndividualProject() {
             >
               <Tooltip title="Delete Task?">
                 <Checkbox
+                style={{
+                  padding: '0px',
+                  minWidth: '2rem',
+                }}
                   checked={task.isCompleted}
                   onClick={() => handleDeleteTask(task.id)}
                 />

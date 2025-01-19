@@ -39,6 +39,7 @@ const LeftSiderSmall = ({
           menuItems={menuItems}
           navigate={navigate}
           showAddProjectModal={showAddProjectModal}
+          
         />
       </>
       <Footer
