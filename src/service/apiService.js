@@ -8,7 +8,7 @@ const API = axios.create({
 
 export const fetchData = async () => {
     try {
-        const response = await API.get('/data'); console.log('found projects:', response)
+        const response = await API.get('/data');
         return response.data;
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -19,7 +19,7 @@ export const fetchData = async () => {
 export const getProjectsViaApi = async () => {
     try {
         console.log('fetching projects')
-        const response = await API.get('/projects');
+        const response = await API.get('/api/projects');
         return response.data;
     } catch (err) {
         console.error('Error fetching projects:', err);
@@ -29,7 +29,7 @@ export const getProjectsViaApi = async () => {
 export const addProjectViaApi = async (projectData) => {
     try {
         console.log("---------------add-------", projectData)
-        const response = await API.post('/projects/', projectData);
+        const response = await API.post('/api/projects/', projectData);
         return response.data;
     } catch (err) {
         console.error('Error adding project:', err);
@@ -39,7 +39,7 @@ export const addProjectViaApi = async (projectData) => {
 export const updateProjectViaApi = async (projectId, projectData) => {
     try {
         console.log("-------------update----------------", projectData)
-        const response = await API.put(`/projects/${projectId}`, projectData);
+        const response = await API.put(`/api/projects/${projectId}`, projectData);
         console.log("response-----------------", response)
         return response.data;
     } catch (err) {
@@ -50,7 +50,7 @@ export const updateProjectViaApi = async (projectId, projectData) => {
 export const updateProjectFavoriteViaApi = async (projectId, projectData) => {
     try {
         console.log('update fav in frontend api service', projectId, projectData)
-        const response = await API.patch(`/projects/${projectId}`, projectData);
+        const response = await API.patch(`/api/projects/${projectId}`, projectData);
         return response.data;
     } catch (err) {
         console.error('Error updating favorite project:', err);
@@ -60,7 +60,7 @@ export const updateProjectFavoriteViaApi = async (projectId, projectData) => {
 export const deleteProjectViaApi = async (projectId) => {
     console.log("deleting proj:", projectId)
     try {
-        const response = await API.delete(`/projects/${projectId}`);
+        const response = await API.delete(`/api/projects/${projectId}`);
         return response.data;
     } catch (err) {
         console.error('Error deleting project:', err);
@@ -72,7 +72,7 @@ export const deleteProjectViaApi = async (projectId) => {
 export const getTasksViaApi = async () => {
     try {
         console.log('fetching tasks')
-        const response = await API.get('/tasks');
+        const response = await API.get('/api/tasks');
         return response.data;
     } catch (err) {
         console.error('Error fetching tasks:', err);
@@ -83,7 +83,7 @@ export const getTasksViaApi = async () => {
 export const addTaskViaApi = async (taskData) => {
     console.log("adding task:", taskData)
     try {
-        const response = await API.post('/tasks', taskData);
+        const response = await API.post('/api/tasks', taskData);
         console.log('logging response data on addition', response)
         return response.data;
     } catch (err) {
@@ -96,7 +96,7 @@ export const updateTaskViaApi = async (taskId, taskData) => {
     console.log("updating task:", taskId, taskData)
     try {
         console.log('update task via api', taskData)
-        const response = await API.put(`/tasks/${taskId}`, taskData);
+        const response = await API.put(`/api/tasks/${taskId}`, taskData);
         return response.data;
     } catch (err) {
         console.error('Error updating task:', err);
@@ -107,7 +107,7 @@ export const updateTaskViaApi = async (taskId, taskData) => {
 export const deleteTaskViaApi = async (taskId) => {
     console.log("deleting task:", taskId)
     try {
-        const response = await API.delete(`/tasks/${taskId}`);
+        const response = await API.delete(`/api/tasks/${taskId}`);
         return response.data;
     } catch (err) {
         console.error('Error deleting task:', err);
