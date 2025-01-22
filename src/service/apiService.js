@@ -1,41 +1,68 @@
-// import { TodoistApi } from "@doist/todoist-api-typescript";
-
 import axios from 'axios';
 
 const API = axios.create({
     baseURL: import.meta.env.VITE_TODOIST_BACKEND_API,
+    withCredentials: true
 });
 
-export const fetchData = async () => {
+/** --- Users --- */
+export const registerUserViaApi = async (userData) => {
     try {
-        const response = await API.get('/data');
+        console.log('registering user in frontend.')
+        const response = await API.post('/users/register', userData);
         return response.data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        throw error;
+    } catch (err) {
+        console.error('error registering user in frontend:', err)
+        throw err;
     }
-};
+}
 
+export const loginUserViaApi = async (credentials) => {
+    try {
+        const response = await API.post('/users/login', credentials);
+        console.log('logging user in frontend.', response)
+        return response.data;
+    } catch (err) {
+        console.error('error registering user in frontend:', err)
+        throw err;
+    }
+}
+
+export const logoutUserViaApi = async () => {
+    try {
+        console.log('logging out of frontend...')
+        const response = await API.post('/users/logout');
+        console.log('api hit from frontend.', response)
+    } catch (err) {
+        console.error('error during logout in frontend', err)
+        throw err;
+    }
+}
+
+/** --- Projects --- */
 export const getProjectsViaApi = async () => {
     try {
         console.log('fetching projects')
-        const response = await API.get('/api/projects');
+        const response = await API.get('/projects');
+        console.log("Projects fetched in apiService:", response.data)
         return response.data;
     } catch (err) {
         console.error('Error fetching projects:', err);
         throw err;
     }
 };
+
 export const addProjectViaApi = async (projectData) => {
     try {
         console.log("---------------add-------", projectData)
-        const response = await API.post('/api/projects/', projectData);
+        const response = await API.post('/projects/', projectData);
         return response.data;
     } catch (err) {
         console.error('Error adding project:', err);
         throw err;
     }
 };
+
 export const updateProjectViaApi = async (projectId, projectData) => {
     try {
         console.log("-------------update----------------", projectData)
@@ -47,6 +74,7 @@ export const updateProjectViaApi = async (projectId, projectData) => {
         throw err;
     }
 };
+
 export const updateProjectFavoriteViaApi = async (projectId, projectData) => {
     try {
         console.log('update fav in frontend api service', projectId, projectData)
@@ -57,10 +85,11 @@ export const updateProjectFavoriteViaApi = async (projectId, projectData) => {
         throw err;
     }
 };
+
 export const deleteProjectViaApi = async (projectId) => {
     console.log("deleting proj:", projectId)
     try {
-        const response = await API.delete(`/api/projects/${projectId}`);
+        const response = await API.delete(`/projects/${projectId}`);
         return response.data;
     } catch (err) {
         console.error('Error deleting project:', err);
@@ -68,11 +97,11 @@ export const deleteProjectViaApi = async (projectId) => {
     }
 };
 
-
+/** --- Tasks --- */
 export const getTasksViaApi = async () => {
     try {
         console.log('fetching tasks')
-        const response = await API.get('/api/tasks');
+        const response = await API.get('/tasks');
         return response.data;
     } catch (err) {
         console.error('Error fetching tasks:', err);
@@ -83,7 +112,7 @@ export const getTasksViaApi = async () => {
 export const addTaskViaApi = async (taskData) => {
     console.log("adding task:", taskData)
     try {
-        const response = await API.post('/api/tasks', taskData);
+        const response = await API.post('/tasks', taskData);
         console.log('logging response data on addition', response)
         return response.data;
     } catch (err) {
@@ -96,7 +125,7 @@ export const updateTaskViaApi = async (taskId, taskData) => {
     console.log("updating task:", taskId, taskData)
     try {
         console.log('update task via api', taskData)
-        const response = await API.put(`/api/tasks/${taskId}`, taskData);
+        const response = await API.put(`/tasks/${taskId}`, taskData);
         return response.data;
     } catch (err) {
         console.error('Error updating task:', err);
@@ -107,26 +136,11 @@ export const updateTaskViaApi = async (taskId, taskData) => {
 export const deleteTaskViaApi = async (taskId) => {
     console.log("deleting task:", taskId)
     try {
-        const response = await API.delete(`/api/tasks/${taskId}`);
+        const response = await API.delete(`/tasks/${taskId}`);
         return response.data;
     } catch (err) {
         console.error('Error deleting task:', err);
         throw err;
     }
 };
-
-
-// const apiToken = import.meta.env.VITE_TODOIST_API_TOKEN;
-// const api = new TodoistApi(apiToken);
-
-// // export const getProjectsViaApi = () => api.getProjects();
-// export const addProjectViaApi = (projectData) => api.addProject(projectData);
-// export const updateProjectViaApi = (projectId, projectData) =>
-//     api.updateProject(projectId, projectData);
-// export const deleteProjectViaApi = (projectId) => api.deleteProject(projectId);
-
-// export const getTasksViaApi = () => api.getTasks();
-// export const addTaskViaApi = (taskData) => api.addTask(taskData);
-// export const updateTaskViaApi = (taskId, taskData) => api.updateTask(taskId, taskData);
-// export const deleteTaskViaApi = (taskId) => api.deleteTask(taskId);
 

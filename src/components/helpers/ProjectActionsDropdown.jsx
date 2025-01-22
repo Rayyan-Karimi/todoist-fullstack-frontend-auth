@@ -1,4 +1,4 @@
-// Project Actions Dropdown
+// library imports
 import PropTypes from "prop-types";
 import { Dropdown } from "antd";
 import { useContext } from "react";
@@ -9,14 +9,13 @@ import {
   FrownOutlined,
   HeartOutlined,
 } from "@ant-design/icons";
-import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
+// internal imports
+import ProjectContext from "../contexts/ProjectsContext";
 
+// component
 const ProjectActionsDropdown = ({ project }) => {
-  const {
-    // handleUpdateFavoriteProjectStatus,
-    updateProjectFavorite,
-    showProjectActionsModal,
-  } = useContext(ProjectsAndTasksContext);
+  const { updateProjectFavorite, showProjectActionsModal } =
+    useContext(ProjectContext);
   const menu = {
     items: [
       {

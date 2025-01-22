@@ -2,11 +2,11 @@ import { useState, useEffect, useContext } from "react";
 import { Button, Modal, Form, Input, DatePicker, Select, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import PropTypes from "prop-types";
-import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
+import ProjectContext from "../contexts/ProjectsContext.jsx";
 import { useDispatch } from "react-redux";
 
 const { Option } = Select;
-import { addTask } from "../../features/tasksSlice";
+import { addTask } from "../../store/tasksSlice";
 import { addTaskViaApi } from "../../service/apiService";
 
 export default function AddTaskModal({
@@ -16,7 +16,7 @@ export default function AddTaskModal({
   task = null,
   onSave,
 }) {
-  const { projects } = useContext(ProjectsAndTasksContext);
+  const { projects } = useContext(ProjectContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
@@ -49,7 +49,7 @@ export default function AddTaskModal({
       });
       console.log("attempted addition of task. new task on attempt :", newTask);
       message.success("Task added successfully!");
-      
+
       dispatch(addTask(newTask.addition));
       setIsModalVisible(false);
       form.resetFields();

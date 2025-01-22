@@ -1,14 +1,14 @@
 // AddProjectModal.jsx
 import { Modal, Form, Input, Checkbox, Button } from "antd";
 import { useContext } from "react";
-import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
+import ProjectContext from "../contexts/ProjectsContext.jsx";
 
 const AddProjectModal = () => {
   const {
     addProjectModal,
     handleModalCancelForAddProject,
     handleFormSubmitForAddProject,
-  } = useContext(ProjectsAndTasksContext);
+  } = useContext(ProjectContext);
 
   return (
     <Modal

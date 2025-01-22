@@ -1,31 +1,21 @@
-// LeftSider Component
+// Library imports
 import { useContext } from "react";
 import { Layout } from "antd";
 import PropTypes from "prop-types";
-const { Sider } = Layout;
-
-import SiderHeader from "./LeftSider-SiderHeader";
-import SiderMenu from "./LeftSider-SiderMenu";
 import { Footer } from "antd/es/layout/layout";
-import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
+const { Sider } = Layout;
+import { useNavigate } from "react-router-dom";
 
-const getLeftSiderStyle = (isLargeScreen, collapsed) => ({
-  background: "rgb(255, 255, 245)",
-  minHeight: "100vh",
-  transform: collapsed ? "translateX(-100%)" : "translateX(0)",
-  position: isLargeScreen ? "relative" : "fixed",
-  zIndex: isLargeScreen ? "auto" : 1000,
-  transition: "transform 0.3s ease-in-out",
-});
+// Internal imports
+import SiderHeader from "./Sider-Header";
+import SiderMenu from "./Sider-Menu";
+import ProjectContext from "../contexts/ProjectsContext.jsx";
 
-const LeftSiderSmall = ({
-  menuItems,
-  navigate,
-  collapsed,
-  setCollapsed,
-  isLargeScreen,
-}) => {
-  const { showAddProjectModal } = useContext(ProjectsAndTasksContext);
+// Component
+const LeftSider = ({ isLargeScreen, setCollapsed, menuItems, collapsed }) => {
+  const { showAddProjectModal } = useContext(ProjectContext);
+  const navigate = useNavigate();
+
   return (
     <Sider
       width={isLargeScreen ? (collapsed ? 0 : 325) : 325}
@@ -39,21 +29,9 @@ const LeftSiderSmall = ({
           menuItems={menuItems}
           navigate={navigate}
           showAddProjectModal={showAddProjectModal}
-          
         />
       </>
-      <Footer
-        style={{
-          position: "absolute",
-          bottom: 0,
-          width: "100%",
-          display: "flex",
-          gap: "1rem",
-          alignItems: "center",
-          background: "inherit",
-          fontWeight: "bold",
-        }}
-      >
+      <Footer style={{ ...getFooterStyle() }}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -74,7 +52,28 @@ const LeftSiderSmall = ({
   );
 };
 
-LeftSiderSmall.propTypes = {
+// Helper
+const getLeftSiderStyle = (isLargeScreen, collapsed) => ({
+  background: "rgb(255, 255, 245)",
+  minHeight: "100vh",
+  transform: collapsed ? "translateX(-100%)" : "translateX(0)",
+  position: isLargeScreen ? "relative" : "fixed",
+  zIndex: isLargeScreen ? "auto" : 1000,
+  transition: "transform 0.3s ease-in-out",
+});
+
+const getFooterStyle = () => ({
+  position: "absolute",
+  bottom: 0,
+  width: "100%",
+  display: "flex",
+  gap: "1rem",
+  alignItems: "center",
+  background: "inherit",
+  fontWeight: "bold",
+});
+
+LeftSider.propTypes = {
   collapsed: PropTypes.bool.isRequired,
   setCollapsed: PropTypes.func.isRequired,
   isLargeScreen: PropTypes.bool.isRequired,
@@ -82,4 +81,4 @@ LeftSiderSmall.propTypes = {
   menuItems: PropTypes.array.isRequired,
 };
 
-export default LeftSiderSmall;
+export default LeftSider;

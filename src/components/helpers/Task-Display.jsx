@@ -1,40 +1,41 @@
-// Single project's view
-import Index from "./Index";
-import AddTaskModal from "../elements/AddTaskModal";
-
+// Library imports
 import { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { List, Typography, Checkbox, Tooltip, Button } from "antd";
 import { EditOutlined } from "@ant-design/icons";
-
-import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
-
 const { Title, Text } = Typography;
 
-export default function IndividualProject() {
-  const { projects, tasks, handleTaskEdit, handleDeleteTask } = useContext(
-    ProjectsAndTasksContext
-  );
-  let { id } = useParams();
-  id = Number.parseInt(id);
+// Internal imports
+import TaskContext from "../contexts/TasksContext.jsx";
+import ProjectContext from "../contexts/ProjectsContext.jsx";
+import AddTaskModal from "./AddTaskModal";
+import Index from "./Task-Empty";
 
-  const filteredTasks = tasks.filter((task) => task.projectId === id);
-  const filteredProject = projects.find((project) => project.id === id);
-
+/* Component */
+export default function TaskDisplay() {
+  // states for tasks
   const [isEditing, setIsEditing] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
-
+  // import projects and tasks
+  const { tasks, handleTaskEdit, handleDeleteTask } = useContext(TaskContext);
+  const { projects } = useContext(ProjectContext);
+  // take project id from params
+  let { id } = useParams();
+  id = Number.parseInt(id);
+  // filter relevant tasks and project
+  const filteredTasks = tasks.filter((task) => task.projectId === id);
+  const filteredProject = projects.find((project) => project.id === id);
+  // add handlers for editing and saving
   const handleEditClick = (task) => {
     setEditingTask(task);
     setIsEditing(true);
   };
-
   const handleEditSave = async (updatedTask) => {
     handleTaskEdit(updatedTask);
     setIsEditing(false);
     setEditingTask(null);
   };
-
+  // return jsx
   return (
     <div
       style={{
@@ -45,17 +46,20 @@ export default function IndividualProject() {
         maxWidth: "600px",
       }}
     >
+      {/* Project title */}
       <Title level={5}>
         <Button
           block={true}
           size="large"
-          // onClick={editProjectTitle(filteredProject?.name)}
           style={{ marginBottom: "20px" }}
+          onClick={alert(
+            `${(filteredProject && filteredProject.name) || "Tasks display"}`
+          )}
         >
           {filteredProject && filteredProject.name}
         </Button>
       </Title>
-
+      {/* List tasks */}
       {filteredTasks.length > 0 ? (
         <List
           dataSource={filteredTasks}
@@ -74,10 +78,10 @@ export default function IndividualProject() {
             >
               <Tooltip title="Delete Task?">
                 <Checkbox
-                style={{
-                  padding: '0px',
-                  minWidth: '2rem',
-                }}
+                  style={{
+                    padding: "0px",
+                    minWidth: "2rem",
+                  }}
                   checked={task.isCompleted}
                   onClick={() => handleDeleteTask(task.id)}
                 />
@@ -112,7 +116,7 @@ export default function IndividualProject() {
       ) : (
         <Text>No tasks found for this project.</Text>
       )}
-
+      {/* Edit task */}
       {isEditing && (
         <AddTaskModal
           isEditing={isEditing}
@@ -122,9 +126,11 @@ export default function IndividualProject() {
           projectId={id}
         />
       )}
+      {/* Add task */}
       {!isEditing && (
         <AddTaskModal setIsEditing={setIsEditing} projectId={id} />
       )}
+      {/* Fallback -> tasks empty */}
       {filteredTasks.length === 0 && <Index />}
     </div>
   );

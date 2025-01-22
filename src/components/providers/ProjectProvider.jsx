@@ -1,22 +1,20 @@
-import { createContext, useState, useEffect } from "react";
+// library imports
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import { message } from "antd";
 
-// Internal imports
-import { useModal } from "./hooks/useModal";
+// internal imports
+import ProjectContext from "../contexts/ProjectsContext";
+import { useModal } from "../../hooks/useModal";
 
 import {
   getProjectsViaApi,
   addProjectViaApi,
   updateProjectViaApi,
   deleteProjectViaApi,
-  getTasksViaApi,
-  updateTaskViaApi,
-  deleteTaskViaApi,
   updateProjectFavoriteViaApi,
-} from "./service/apiService";
-
-import { useSelector, useDispatch } from "react-redux";
+} from "../../service/apiService";
 
 import {
   setProjects,
@@ -25,19 +23,14 @@ import {
   deleteProject,
   setIsLoading,
   setHasError,
-} from "./features/projectsSlice";
+} from "../../store/projectsSlice";
 
-import { setTasks, updateTask, deleteTask } from "./features/tasksSlice";
-
-export const ProjectsAndTasksContext = createContext();
-
-export const ProjectsAndTasksProvider = ({ children }) => {
-  // Redux-ing
+// component
+const ProjectProvider = ({ children }) => {
   const { projects, isLoading, hasError } = useSelector(
     (state) => state.projects
   );
 
-  const { tasks } = useSelector((state) => state.tasks);
   const dispatch = useDispatch();
 
   const addProjectModal = useModal();
@@ -48,9 +41,7 @@ export const ProjectsAndTasksProvider = ({ children }) => {
 
   const [actionTypeOnProject, setActionTypeOnProject] = useState("");
 
-  /**
-   * Project state handlers
-   */
+  /* Project state handlers */
   const handleFormSubmitForAddProject = async (values) => {
     const { projectTitle, isFavorite } = values;
     try {
@@ -163,10 +154,10 @@ export const ProjectsAndTasksProvider = ({ children }) => {
 
   useEffect(() => {
     dispatch(setIsLoading(true));
-    Promise.all([getProjectsViaApi(), getTasksViaApi()])
-      .then(([fetchedProjects, fetchedTasks]) => {
+    console.log("YAHAn.");
+    getProjectsViaApi()
+      .then((fetchedProjects) => {
         dispatch(setProjects(fetchedProjects));
-        dispatch(setTasks(fetchedTasks));
         dispatch(setIsLoading(false));
       })
       .catch((error) => {
@@ -175,46 +166,14 @@ export const ProjectsAndTasksProvider = ({ children }) => {
         dispatch(setIsLoading(false));
       });
   }, [dispatch]);
-  // import tasksReducer from "./store/TasksReducer";
 
-  /**
-   * Task Handlers
-   */
-  const handleTaskEdit = async (updatedTask) => {
-    try {
-      await updateTaskViaApi(updatedTask.id, {
-        content: updatedTask.content,
-        description: updatedTask.description,
-        dueDate: updatedTask.dueDate,
-        priority: updatedTask.priority,
-        projectId: updatedTask.projectId,
-      });
-      dispatch(updateTask(updatedTask));
-      message.success("Task updated successfully");
-    } catch (error) {
-      console.error("Error updating task:", error);
-    }
-  };
-
-  const handleDeleteTask = async (theId) => {
-    console.log("handleDeleteTask in Provider");
-    await deleteTaskViaApi(theId)
-      .then(() => {
-        dispatch(deleteTask(theId));
-        message.success("Task deleted.");
-      })
-      .catch((error) => message.error("Error deleting task:", error));
-  };
-
+  // main jsx
   return (
-    <ProjectsAndTasksContext.Provider
+    <ProjectContext.Provider
       value={{
-        handleTaskEdit,
-        handleDeleteTask,
         projects,
         isLoading,
         hasError,
-        tasks,
         dispatch,
         addProjectModal,
         editOrDeleteProjectModal,
@@ -234,10 +193,12 @@ export const ProjectsAndTasksProvider = ({ children }) => {
       }}
     >
       {children}
-    </ProjectsAndTasksContext.Provider>
+    </ProjectContext.Provider>
   );
 };
 
-ProjectsAndTasksProvider.propTypes = {
+export default ProjectProvider;
+
+ProjectProvider.propTypes = {
   children: PropTypes.any,
 };

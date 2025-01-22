@@ -1,6 +1,6 @@
 // EditOrDeleteProjectModal.jsx
+import ProjectContext from "../contexts/ProjectsContext.jsx";
 import { Modal, Form, Input, Checkbox, Button } from "antd";
-import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
 import { useContext } from "react";
 
 const EditOrDeleteProjectModal = () => {
@@ -10,7 +10,7 @@ const EditOrDeleteProjectModal = () => {
     editOrDeleteProjectModal,
     handleEditProjectFormSubmit,
     handleDeleteProject,
-  } = useContext(ProjectsAndTasksContext);
+  } = useContext(ProjectContext);
 
   return (
     <Modal

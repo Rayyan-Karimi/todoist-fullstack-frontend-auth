@@ -1,10 +1,10 @@
 import PropTypes from "prop-types";
 import { useContext } from "react";
 import ProjectActionsDropdown from "./ProjectActionsDropdown";
-import { ProjectsAndTasksContext } from "../../ProjectsAndTasksProvider";
+import ProjectContext from "../contexts/ProjectsContext";
 
 const ProjectLabel = ({ project }) => {
-  const { setSelectedProject } = useContext(ProjectsAndTasksContext);
+  const { setSelectedProject } = useContext(ProjectContext);
   return (
     <div
       style={{
