@@ -59,6 +59,7 @@ export const logoutUserViaApi = async () => {
 export const getProjectsViaApi = async () => {
     try {
         const response = await API.get('/projects');
+        console.log("Result from inside getProjectsViaAapi:", response);
         return response.data;
     } catch (err) {
         console.error('Error fetching projects:', err);

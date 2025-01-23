@@ -2,8 +2,6 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
     projects: [],
-    isLoading: false,
-    hasError: null,
 }
 
 const projectsSlice = createSlice({
@@ -25,12 +23,6 @@ const projectsSlice = createSlice({
         deleteProject(state, action) {
             state.projects = state.projects.filter((project) => project.id !== action.payload)
         },
-        setIsLoading(state, action) {
-            state.isLoading = action.payload
-        },
-        setHasError(state, action) {
-            state.hasError = action.payload
-        }
     }
 });
 

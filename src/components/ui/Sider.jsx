@@ -12,9 +12,17 @@ import SiderMenu from "./Sider-Menu";
 import ProjectContext from "../contexts/ProjectsContext.jsx";
 
 // Component
-const LeftSider = ({ isLargeScreen, setCollapsed, menuItems, collapsed, setUserData }) => {
+const LeftSider = ({
+  isLargeScreen,
+  setCollapsed,
+  menuItems,
+  collapsed,
+  setUserData,
+}) => {
   const { showAddProjectModal } = useContext(ProjectContext);
   const navigate = useNavigate();
+
+  console.log("Menu items:", menuItems);
 
   return (
     <Sider
@@ -24,7 +32,11 @@ const LeftSider = ({ isLargeScreen, setCollapsed, menuItems, collapsed, setUserD
       }}
     >
       <>
-        <SiderHeader setUserData={setUserData} collapsed={collapsed} setCollapsed={setCollapsed} />
+        <SiderHeader
+          setUserData={setUserData}
+          collapsed={collapsed}
+          setCollapsed={setCollapsed}
+        />
         <SiderMenu
           menuItems={menuItems}
           navigate={navigate}

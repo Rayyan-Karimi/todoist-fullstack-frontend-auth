@@ -4,6 +4,7 @@ import ProjectActionsDropdown from "./ProjectActionsDropdown";
 import ProjectContext from "../contexts/ProjectsContext";
 
 const ProjectLabel = ({ project }) => {
+  console.log("Project label>> check PROJECT name:'", project);
   const { setSelectedProject } = useContext(ProjectContext);
   return (
     <div

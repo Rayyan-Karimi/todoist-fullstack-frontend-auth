@@ -21,13 +21,11 @@ import {
   addProject,
   updateProjects,
   deleteProject,
-  setIsLoading,
-  setHasError,
 } from "../../store/projectsSlice";
 
 // component
 const ProjectProvider = ({ children }) => {
-  const { projects, isLoading, hasError } = useSelector(
+  const { projects } = useSelector(
     (state) => state.projects
   );
 
@@ -153,17 +151,16 @@ const ProjectProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    dispatch(setIsLoading(true));
     console.log("inside project provider use effect.");
     getProjectsViaApi()
       .then((fetchedProjects) => {
         dispatch(setProjects(fetchedProjects));
-        dispatch(setIsLoading(false));
       })
       .catch((error) => {
-        console.error("Error while fetching data from project provider use effect:", error);
-        dispatch(setHasError(true));
-        dispatch(setIsLoading(false));
+        console.error(
+          "Error while fetching data from project provider use effect:",
+          error
+        );
       });
   }, [dispatch]);
 
@@ -172,8 +169,6 @@ const ProjectProvider = ({ children }) => {
     <ProjectContext.Provider
       value={{
         projects,
-        isLoading,
-        hasError,
         dispatch,
         addProjectModal,
         editOrDeleteProjectModal,

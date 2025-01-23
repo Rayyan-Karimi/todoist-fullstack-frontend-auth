@@ -17,89 +17,79 @@ import ProjectContext from "../contexts/ProjectsContext.jsx";
 
 // Component
 const UserDashboard = ({ setUserData }) => {
-  const { setSelectedProject, isLoading, projects, hasError } =
-    useContext(ProjectContext);
+  const { setSelectedProject, projects } = useContext(ProjectContext);
   const isLargeScreen = useMediaQuery({ minWidth: 751 });
   const [collapsed, setCollapsed] = useState(false);
 
-  if (isLoading) {
-    return <>Loading...</>;
-  } else if (hasError) {
-    return <>Error loading data. Please check Login Token. API fetch error.</>;
-  } else {
-    const menuItems = [
-      {
-        key: "my-favorites",
-        label: "My Favorites",
-        icon: <ProjectOutlined />,
-        children: projects
-          .filter((project) => project.isFavorite)
-          .map((project) => ({
-            label: <ProjectLabel onClick={() => setSelectedProject(project)} />,
-            key: `/my-favorites/${project.id}`,
-          })),
-      },
-      {
-        key: "my-projects",
-        label: "My Projects",
-        icon: <ProfileOutlined />,
-        children: projects.map((project) => ({
-          label: (
+  const menuItems = [
+    {
+      key: "my-favorites",
+      label: "My Favorites",
+      icon: <ProjectOutlined />,
+      children: projects
+        .filter((project) => project.isFavorite)
+        .map((project) => ({
+          label: <ProjectLabel onClick={() => setSelectedProject(project)} />,
+          key: `/my-favorites/${project.id}`,
+        })),
+    },
+    {
+      key: "my-projects",
+      label: "My Projects",
+      icon: <ProfileOutlined />,
+      children: projects.map((project) => ({
+        label: (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "12px",
+            }}
+            onClick={() => setSelectedProject(project)}
+          >
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                gap: "12px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                maxWidth: 120,
               }}
-              onClick={() => setSelectedProject(project)}
+              title={project.name}
             >
-              <div
-                style={{
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  maxWidth: 120,
-                }}
-                title={project.name}
-              >
-                {project.name}
-              </div>
-              <div style={{ display: "flex", gap: "8px" }}>
-                <ProjectActionsDropdown project={project} />
-              </div>
+              {project.name}
             </div>
-          ),
-          key: `/my-projects/${project.id}`,
-        })),
-      },
-    ];
+            <div style={{ display: "flex", gap: "8px" }}>
+              <ProjectActionsDropdown project={project} />
+            </div>
+          </div>
+        ),
+        key: `/my-projects/${project.id}`,
+      })),
+    },
+  ];
 
-    return (
-      <div className="App">
-        <Layout>
-          <LeftSider
-            setUserData={setUserData}
-            collapsed={collapsed}
-            isLargeScreen={isLargeScreen}
-            setCollapsed={setCollapsed}
-            menuItems={menuItems}
-          />
-          {collapsed && (
-            <LeftSiderToggle
-              collapsed={collapsed}
-              setCollapsed={setCollapsed}
-            />
-          )}
+  return (
+    <div className="App">
+      <Layout>
+        <LeftSider
+          setUserData={setUserData}
+          collapsed={collapsed}
+          isLargeScreen={isLargeScreen}
+          setCollapsed={setCollapsed}
+          menuItems={menuItems}
+        />
+        {collapsed && (
+          <LeftSiderToggle collapsed={collapsed} setCollapsed={setCollapsed} />
+        )}
 
-          {/* Right side Layout */}
-          <TheRightLayout />
-        </Layout>
+        {/* Right side Layout */}
+        <TheRightLayout />
+      </Layout>
 
-        {/* Modals */}
-        <EditOrDeleteProjectModal />
-        <AddProjectModal />
-      </div>
-    );
-  }
+      {/* Modals */}
+      <EditOrDeleteProjectModal />
+      <AddProjectModal />
+    </div>
+  );
 };
 
 UserDashboard.propTypes = {
