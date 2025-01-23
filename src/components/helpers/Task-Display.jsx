@@ -52,9 +52,9 @@ export default function TaskDisplay() {
           block={true}
           size="large"
           style={{ marginBottom: "20px" }}
-          onClick={alert(
-            `${(filteredProject && filteredProject.name) || "Tasks display"}`
-          )}
+          onClick={(event) => {
+            event.preventDefault();
+          }}
         >
           {filteredProject && filteredProject.name}
         </Button>

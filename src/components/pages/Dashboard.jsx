@@ -9,7 +9,6 @@ import PropTypes from "prop-types";
 import ProjectLabel from "../helpers/ProjectLabel.jsx";
 import AddProjectModal from "../helpers/AddProjectModal.jsx";
 import EditOrDeleteProjectModal from "../helpers/EditOrDeleteProjectModal.jsx";
-import ProjectActionsDropdown from "../helpers/ProjectActionsDropdown.jsx";
 import LeftSider from "../ui/Sider.jsx";
 import TheRightLayout from "../ui/Right-Layout.jsx";
 import LeftSiderToggle from "../ui/Sider-Toggle.jsx";
@@ -29,8 +28,13 @@ const UserDashboard = ({ setUserData }) => {
       children: projects
         .filter((project) => project.isFavorite)
         .map((project) => ({
-          label: <ProjectLabel onClick={() => setSelectedProject(project)} />,
-          key: `/my-favorites/${project.id}`,
+          label: (
+            <ProjectLabel
+              project={project}
+              onClick={() => setSelectedProject(project)}
+            />
+          ),
+          key: `/dashboard/my-favorites/${project.id}`,
         })),
     },
     {
@@ -39,30 +43,12 @@ const UserDashboard = ({ setUserData }) => {
       icon: <ProfileOutlined />,
       children: projects.map((project) => ({
         label: (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: "12px",
-            }}
+          <ProjectLabel
+            project={project}
             onClick={() => setSelectedProject(project)}
-          >
-            <div
-              style={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                maxWidth: 120,
-              }}
-              title={project.name}
-            >
-              {project.name}
-            </div>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <ProjectActionsDropdown project={project} />
-            </div>
-          </div>
+          />
         ),
-        key: `/my-projects/${project.id}`,
+        key: `/dashboard/my-favorites/${project.id}`,
       })),
     },
   ];

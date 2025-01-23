@@ -81,7 +81,7 @@ export const addProjectViaApi = async (projectData) => {
 export const updateProjectViaApi = async (projectId, projectData) => {
     try {
         console.log("-------------update----------------", projectData)
-        const response = await API.put(`/api/projects/${projectId}`, projectData);
+        const response = await API.put(`/projects/${projectId}`, projectData);
         console.log("response-----------------", response)
         return response.data;
     } catch (err) {
@@ -93,7 +93,7 @@ export const updateProjectViaApi = async (projectId, projectData) => {
 export const updateProjectFavoriteViaApi = async (projectId, projectData) => {
     try {
         console.log('update fav in frontend api service', projectId, projectData)
-        const response = await API.patch(`/api/projects/${projectId}`, projectData);
+        const response = await API.patch(`/projects/${projectId}`, projectData);
         return response.data;
     } catch (err) {
         console.error('Error updating favorite project:', err);

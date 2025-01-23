@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import {
@@ -13,8 +13,6 @@ import { setProjects } from "../../store/projectsSlice";
 
 const Login = ({ setUserData }) => {
   const navigate = useNavigate();
-  const { projects } = useSelector((state) => state.projects);
-  const { tasks } = useSelector((state) => state.tasks);
   const dispatch = useDispatch();
 
   const [name, setName] = useState("");
