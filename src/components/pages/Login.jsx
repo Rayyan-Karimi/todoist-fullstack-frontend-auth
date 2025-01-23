@@ -1,67 +1,96 @@
 import { useState } from "react";
-import "../../App.css";
-import {
-  getProjectsViaApi,
-  getTasksViaApi,
-  loginUserViaApi,
-} from "../../service/apiService";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import {
+  loginUserViaApi,
+  registerUserViaApi,
+  getProjectsViaApi,
+  getTasksViaApi,
+} from "../../service/apiService";
 
-const Login = ({ setIsAuthenticated }) => {
+const Login = ({ setUserData }) => {
   const navigate = useNavigate();
-  // console.log("yahan se pehle 2");
 
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [login, setLogin] = useState(true);
+  const [login, setLogin] = useState(true); // Toggle between login/signup
+  const [error, setError] = useState(null);
 
-  const handleSubmit = async () => {
-    // event.preventDefault();
-    console.log("yahan nahi > handleSubmit > Login.jsx");
-    setName(name);
-    setEmail(email);
-    setPassword(password);
-    if (login) {
-      console.log("name updated", name);
-      await loginUserViaApi({ name, email, password });
-      setIsAuthenticated(true);
-      console.log("Going to dash....");
-      await getProjectsViaApi();
-      await getTasksViaApi();
-      await navigate("/dashboard");
-    } else {
-      console.log("email updated", email);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      if (login) {
+        const loginResponse = await loginUserViaApi({ email, password });
+
+        if (loginResponse?.user) {
+          setUserData(loginResponse.user);
+          // Fetch projects and tasks after successful login
+          try {
+            await Promise.all([getProjectsViaApi(), getTasksViaApi()]);
+            navigate("/dashboard");
+          } catch (err) {
+            console.error("Error fetching initial data:", err);
+            setError("Error loading your data. Please try again.");
+          }
+        }
+      } else {
+        const signupResponse = await registerUserViaApi({
+          name,
+          email,
+          password,
+        });
+
+        if (signupResponse?.user) {
+          setUserData(signupResponse.user);
+          navigate("/dashboard");
+        }
+      }
+    } catch (err) {
+      console.error("Error in Login/Signup:", err);
+      setError(
+        err.response?.data?.error ||
+          "Authentication failed. Please check your credentials."
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  console.log('Itna bohot hai')
   return (
     <div className="flex justify-center items-center min-h-screen bg-red-500">
       <div className="flex flex-col items-center bg-emerald-300 p-10 rounded-3xl">
         <h3 className="text-xl font-bold underline">
           {login ? `Login` : `Signup`}
         </h3>
-        <div>
-          <button
-            className="border text-black border-black m-2 bg-yellow-300 rounded-lg px-2"
-            onClick={() => setLogin(!login)}
-          >
-            {login ? `New user ? Sign Up` : `Already signed up ? Log in!`}
-          </button>
-        </div>
-        <div className="flex flex-col gap-4 p-10 bg-amber-200 m-4">
-          <label htmlFor="name" className="flex justify-between min-w-10">
-            <span>Name:</span>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoComplete="rayyan name"
-            />
-          </label>
+        <button
+          className="border text-black border-black m-2 bg-yellow-300 rounded-lg px-2"
+          onClick={() => setLogin(!login)}
+        >
+          {login ? `New user? Sign Up` : `Already signed up? Log In!`}
+        </button>
+        <form
+          className="flex flex-col gap-4 p-10 bg-amber-200 m-4"
+          onSubmit={handleSubmit}
+        >
+          {!login && (
+            <label htmlFor="name" className="flex justify-between min-w-10">
+              <span>Name:</span>
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+                required={!login}
+              />
+            </label>
+          )}
           <label htmlFor="email" className="flex justify-between min-w-10">
             <span>Email:</span>
             <input
@@ -69,7 +98,8 @@ const Login = ({ setIsAuthenticated }) => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              autoComplete="rayyan email"
+              autoComplete="email"
+              required
             />
           </label>
           <label htmlFor="password" className="flex justify-between">
@@ -79,23 +109,26 @@ const Login = ({ setIsAuthenticated }) => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
             />
           </label>
-        </div>
-        <button
-          className="border border-black m-2 bg-green-600 active:bg-lime-200 text-gray-50 font-bold rounded-sm p-2"
-          type="submit"
-          onClick={handleSubmit}
-        >
-          {login ? `Login` : `Signup`}
-        </button>
+          {error && <p className="text-red-600">{error}</p>}
+          <button
+            className="border border-black m-2 bg-green-600 active:bg-lime-200 text-gray-50 font-bold rounded-sm p-2"
+            type="submit"
+            disabled={isLoading}
+          >
+            {isLoading ? "Please wait..." : login ? "Login" : "Signup"}
+          </button>
+        </form>
       </div>
     </div>
   );
 };
 
 Login.propTypes = {
-  setIsAuthenticated: PropTypes.func.isRequired,
+  setUserData: PropTypes.func.isRequired,
 };
 
 export default Login;

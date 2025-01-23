@@ -14,7 +14,7 @@ import { setTasks, updateTask, deleteTask } from "../../store/tasksSlice";
 
 const TaskProvider = ({ children }) => {
   // internal state
-  const { projects, isLoading, hasError, setIsLoading, setHasError } =
+  const { projects, isLoading, hasError } =
     useSelector((state) => state.projects);
   const { tasks } = useSelector((state) => state.tasks);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -22,18 +22,15 @@ const TaskProvider = ({ children }) => {
   const dispatch = useDispatch();
   // the task of fetching tasks
   useEffect(() => {
-    console.log("YAHAn tasks.");
-    // dispatch(setIsLoading(true));
+    console.log("inside task provider use effect.");
     getTasksViaApi()
       .then(([fetchedTasks]) => {
         dispatch(setTasks(fetchedTasks));
       })
       .catch((error) => {
-        dispatch(setHasError(true));
-        // dispatch(setIsLoading(false));
-        message.error("Error while fetching data from API:", error);
+        console.error("Error while fetching data from task provider use effect:", error);
       });
-  }, [dispatch, setHasError, setIsLoading]);
+  }, [dispatch]);
   /* task handlers*/
   const handleTaskEdit = async (updatedTask) => {
     try {

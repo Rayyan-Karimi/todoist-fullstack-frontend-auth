@@ -6,6 +6,19 @@ const API = axios.create({
 });
 
 /** --- Users --- */
+export const validateTokenViaApi = async () => {
+    try {
+        const tokenResponse = await API.get('/users/validate');
+        if (!tokenResponse.data) {
+            throw new Error('No user data received');
+        }
+        return tokenResponse.data;
+    } catch (error) {
+        console.error('Token validation failed:', error.response?.data || error.message);
+        throw error;
+    }
+};
+
 export const registerUserViaApi = async (userData) => {
     try {
         console.log('registering user in frontend.')
@@ -20,13 +33,16 @@ export const registerUserViaApi = async (userData) => {
 export const loginUserViaApi = async (credentials) => {
     try {
         const response = await API.post('/users/login', credentials);
-        console.log('logging user in frontend.', response)
+        if (!response.data?.user) {
+            throw new Error('No user data received from login');
+        }
         return response.data;
     } catch (err) {
-        console.error('error registering user in frontend:', err)
+        console.error('Login error:', err.response?.data || err.message);
         throw err;
     }
 }
+
 
 export const logoutUserViaApi = async () => {
     try {
@@ -42,9 +58,7 @@ export const logoutUserViaApi = async () => {
 /** --- Projects --- */
 export const getProjectsViaApi = async () => {
     try {
-        console.log('fetching projects')
         const response = await API.get('/projects');
-        console.log("Projects fetched in apiService:", response.data)
         return response.data;
     } catch (err) {
         console.error('Error fetching projects:', err);
@@ -100,7 +114,6 @@ export const deleteProjectViaApi = async (projectId) => {
 /** --- Tasks --- */
 export const getTasksViaApi = async () => {
     try {
-        console.log('fetching tasks')
         const response = await API.get('/tasks');
         return response.data;
     } catch (err) {

@@ -1,37 +1,65 @@
 // React & antd imports
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-// Imports of self made items
+// Imports of self-made items
 import Login from "./components/pages/Login.jsx";
+import { validateTokenViaApi } from "./service/apiService.js";
 import UserDashboard from "./components/pages/Dashboard.jsx";
-import { useState } from "react";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    document.cookie.includes("token")
-  );
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      try {
+        const tokenResponseData = await validateTokenViaApi();
+        setUserData(tokenResponseData);
+      } catch (error) {
+        console.error("Token verification failed:", error);
+        setUserData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyToken();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <Routes>
       <Route
-        path="/dashboard"
+        path="/dashboard/*"
         element={
-          isAuthenticated ? <UserDashboard /> : <Navigate to={"/login"} />
+          userData !== null ? (
+            <UserDashboard userData={userData} setUserData={setUserData} />
+          ) : (
+            <Navigate to="/login" />
+          )
         }
       />
       <Route
         path="/login"
         element={
-          !isAuthenticated ? (
-            <Login setIsAuthenticated={setIsAuthenticated} />
+          userData === null ? (
+            <Login setUserData={setUserData} />
           ) : (
-            <Navigate to={"/dashboard"} />
+            <Navigate to="/dashboard" />
           )
         }
       />
       <Route
         path="*"
-        element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />}
+        element={<Navigate to={userData ? "/dashboard" : "/login"} />}
       />
     </Routes>
   );

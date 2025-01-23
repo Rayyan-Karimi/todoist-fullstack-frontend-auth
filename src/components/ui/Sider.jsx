@@ -12,7 +12,7 @@ import SiderMenu from "./Sider-Menu";
 import ProjectContext from "../contexts/ProjectsContext.jsx";
 
 // Component
-const LeftSider = ({ isLargeScreen, setCollapsed, menuItems, collapsed }) => {
+const LeftSider = ({ isLargeScreen, setCollapsed, menuItems, collapsed, setUserData }) => {
   const { showAddProjectModal } = useContext(ProjectContext);
   const navigate = useNavigate();
 
@@ -24,7 +24,7 @@ const LeftSider = ({ isLargeScreen, setCollapsed, menuItems, collapsed }) => {
       }}
     >
       <>
-        <SiderHeader collapsed={collapsed} setCollapsed={setCollapsed} />
+        <SiderHeader setUserData={setUserData} collapsed={collapsed} setCollapsed={setCollapsed} />
         <SiderMenu
           menuItems={menuItems}
           navigate={navigate}
@@ -74,10 +74,10 @@ const getFooterStyle = () => ({
 });
 
 LeftSider.propTypes = {
+  setUserData: PropTypes.func.isRequired,
   collapsed: PropTypes.bool.isRequired,
   setCollapsed: PropTypes.func.isRequired,
   isLargeScreen: PropTypes.bool.isRequired,
-  navigate: PropTypes.any.isRequired,
   menuItems: PropTypes.array.isRequired,
 };
 

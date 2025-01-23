@@ -154,14 +154,14 @@ const ProjectProvider = ({ children }) => {
 
   useEffect(() => {
     dispatch(setIsLoading(true));
-    console.log("YAHAn.");
+    console.log("inside project provider use effect.");
     getProjectsViaApi()
       .then((fetchedProjects) => {
         dispatch(setProjects(fetchedProjects));
         dispatch(setIsLoading(false));
       })
       .catch((error) => {
-        message.error("Error while fetching data from API:", error);
+        console.error("Error while fetching data from project provider use effect:", error);
         dispatch(setHasError(true));
         dispatch(setIsLoading(false));
       });

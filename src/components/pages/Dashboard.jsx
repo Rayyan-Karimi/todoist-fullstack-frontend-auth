@@ -3,6 +3,7 @@ import { useState, useContext } from "react";
 import { ProjectOutlined, ProfileOutlined } from "@ant-design/icons";
 import { Layout } from "antd";
 import { useMediaQuery } from "react-responsive";
+import PropTypes from "prop-types";
 
 // Imports of self made items
 import ProjectLabel from "../helpers/ProjectLabel.jsx";
@@ -15,7 +16,7 @@ import LeftSiderToggle from "../ui/Sider-Toggle.jsx";
 import ProjectContext from "../contexts/ProjectsContext.jsx";
 
 // Component
-const UserDashboard = () => {
+const UserDashboard = ({ setUserData }) => {
   const { setSelectedProject, isLoading, projects, hasError } =
     useContext(ProjectContext);
   const isLargeScreen = useMediaQuery({ minWidth: 751 });
@@ -76,6 +77,7 @@ const UserDashboard = () => {
       <div className="App">
         <Layout>
           <LeftSider
+            setUserData={setUserData}
             collapsed={collapsed}
             isLargeScreen={isLargeScreen}
             setCollapsed={setCollapsed}
@@ -98,6 +100,10 @@ const UserDashboard = () => {
       </div>
     );
   }
+};
+
+UserDashboard.propTypes = {
+  setUserData: PropTypes.func.isRequired,
 };
 
 export default UserDashboard;

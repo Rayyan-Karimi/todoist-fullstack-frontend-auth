@@ -11,13 +11,13 @@ import TaskProvider from "./components/providers/TaskProvider.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
-      <ProjectProvider>
-        <TaskProvider>
-          <BrowserRouter>
+      <BrowserRouter>
+        <ProjectProvider>
+          <TaskProvider>
             <App />
-          </BrowserRouter>
-        </TaskProvider>
-      </ProjectProvider>
+          </TaskProvider>
+        </ProjectProvider>
+      </BrowserRouter>
     </Provider>
   </StrictMode>
 );
