@@ -22,7 +22,7 @@ const LeftSider = ({
   const { showAddProjectModal } = useContext(ProjectContext);
   const navigate = useNavigate();
 
-  console.log("Menu items:", menuItems);
+  console.log("Menu in SIder:", menuItems);
 
   return (
     <Sider

@@ -4,7 +4,6 @@ import ProjectActionsDropdown from "./ProjectActionsDropdown";
 import ProjectContext from "../contexts/ProjectsContext";
 
 const ProjectLabel = ({ project }) => {
-  console.log("Project label>> check PROJECT name:'", project);
   const { setSelectedProject } = useContext(ProjectContext);
   return (
     <div
@@ -38,8 +37,8 @@ ProjectLabel.propTypes = {
     name: PropTypes.string.isRequired,
     isFavorite: PropTypes.any.isRequired,
   }).isRequired,
-  setSelectedProject: PropTypes.func.isRequired,
-  showProjectActionsModal: PropTypes.func.isRequired,
+  setSelectedProject: PropTypes.func,
+  showProjectActionsModal: PropTypes.func,
   handleUpdateFavoriteProjectStatus: PropTypes.func,
 };
 

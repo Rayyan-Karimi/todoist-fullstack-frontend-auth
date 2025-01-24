@@ -32,36 +32,19 @@ const Login = ({ setUserData }) => {
       if (login) {
         const loginResponse = await loginUserViaApi({ email, password });
 
-        if (loginResponse?.user) {
-          setUserData(loginResponse.user);
-          // Fetch projects and tasks after successful login
-          try {
-            console.log("logging in.......................");
-            await Promise.all([getProjectsViaApi(), getTasksViaApi()]).then(
-              ([fetchedProjects, fetchedTasks]) => {
-                dispatch(setProjects(fetchedProjects));
-                console.log("setting projects;", fetchedProjects);
-                dispatch(setTasks(fetchedTasks));
-                console.log("setting tasks;", fetchedTasks);
-              }
-            );
-            navigate("/dashboard");
-          } catch (err) {
-            console.error("Error fetching initial data:", err);
-            setError("Error loading your data. Please try again.");
-          }
-        }
+        setUserData(loginResponse.user);
+        console.log("logging in.......................");
+        onSuccessfulLogin();
       } else {
-        const signupResponse = await registerUserViaApi({
+        const registerResponse = await registerUserViaApi({
           name,
           email,
           password,
         });
 
-        if (signupResponse?.user) {
-          setUserData(signupResponse.user);
-          navigate("/dashboard");
-        }
+        setUserData(registerResponse.user);
+        console.log("signed up... logging in....................");
+        onSuccessfulLogin();
       }
     } catch (err) {
       console.error("Error in Login/Signup:", err);
@@ -72,6 +55,18 @@ const Login = ({ setUserData }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const onSuccessfulLogin = async () => {
+    await Promise.all([getProjectsViaApi(), getTasksViaApi()]).then(
+      ([fetchedProjects, fetchedTasks]) => {
+        dispatch(setProjects(fetchedProjects));
+        console.log("setting projects;", fetchedProjects);
+        dispatch(setTasks(fetchedTasks));
+        console.log("setting tasks;", fetchedTasks);
+      }
+    );
+    navigate("/dashboard");
   };
 
   return (

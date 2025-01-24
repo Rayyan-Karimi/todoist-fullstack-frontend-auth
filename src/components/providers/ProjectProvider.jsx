@@ -25,9 +25,7 @@ import {
 
 // component
 const ProjectProvider = ({ children }) => {
-  const { projects } = useSelector(
-    (state) => state.projects
-  );
+  const { projects } = useSelector((state) => state.projects);
 
   const dispatch = useDispatch();
 
@@ -64,7 +62,6 @@ const ProjectProvider = ({ children }) => {
         name: values.name,
         isFavorite: values.isFavorite,
       });
-      console.log("--------------", updatedProject);
       dispatch(updateProjects(updatedProject));
       editOrDeleteProjectModal.form.resetFields();
       message.success("Updated project successfully.");
@@ -154,7 +151,8 @@ const ProjectProvider = ({ children }) => {
     console.log("inside project provider use effect.");
     getProjectsViaApi()
       .then((fetchedProjects) => {
-        dispatch(setProjects(fetchedProjects));
+        console.log("setting projects", fetchedProjects);
+        dispatch(setProjects(fetchedProjects || []));
       })
       .catch((error) => {
         console.error(

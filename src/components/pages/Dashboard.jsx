@@ -25,31 +25,40 @@ const UserDashboard = ({ setUserData }) => {
       key: "my-favorites",
       label: "My Favorites",
       icon: <ProjectOutlined />,
-      children: projects
-        .filter((project) => project.isFavorite)
-        .map((project) => ({
-          label: (
-            <ProjectLabel
-              project={project}
-              onClick={() => setSelectedProject(project)}
-            />
-          ),
-          key: `/dashboard/my-favorites/${project.id}`,
-        })),
+      children:
+        projects &&
+        Array.isArray(projects) &&
+        projects.length !== 0 &&
+        projects.some((project) => project.isFavorite)
+          ? projects
+              .filter((project) => project.isFavorite)
+              .map((project) => ({
+                label: (
+                  <ProjectLabel
+                    project={project}
+                    onClick={() => setSelectedProject(project)}
+                  />
+                ),
+                key: `dashboard/my-favorites/${project.id}`,
+              }))
+          : undefined,
     },
     {
       key: "my-projects",
       label: "My Projects",
       icon: <ProfileOutlined />,
-      children: projects.map((project) => ({
-        label: (
-          <ProjectLabel
-            project={project}
-            onClick={() => setSelectedProject(project)}
-          />
-        ),
-        key: `/dashboard/my-favorites/${project.id}`,
-      })),
+      children:
+        projects && Array.isArray(projects) && projects.length !== 0
+          ? projects.map((project) => ({
+              label: (
+                <ProjectLabel
+                  project={project}
+                  onClick={() => setSelectedProject(project)}
+                />
+              ),
+              key: `dashboard/my-projects/${project.id}`,
+            }))
+          : undefined,
     },
   ];
 
@@ -66,7 +75,6 @@ const UserDashboard = ({ setUserData }) => {
         {collapsed && (
           <LeftSiderToggle collapsed={collapsed} setCollapsed={setCollapsed} />
         )}
-
         {/* Right side Layout */}
         <TheRightLayout />
       </Layout>

@@ -20,23 +20,25 @@ const SiderMenu = ({ menuItems, navigate, showAddProjectModal }) => {
     ...menuItems, // Transform existing items to new structure
   ];
 
+  console.log("Menu in SIdEr MEnu:", menuData);
+
   return (
     <>
-    <Flex align="end">
-      <Menu
-        mode="inline"
-        defaultSelectedKeys={["my-projects"]}
-        defaultOpenKeys={["my-projects"]}
-        onClick={({ key }) => {
-          const selectedItem = menuData.find((item) => item.key === key);
-          selectedItem?.onClick?.(); // Call the action if available
-          if (!selectedItem?.onClick) navigate(key);
-        }}
-        style={getSiderMenuStyle()}
-        items={menuData} // Use the new `items` prop
-        className="bg-white"
-      />
-    </Flex>
+      <Flex align="end">
+        <Menu
+          mode="inline"
+          defaultSelectedKeys={["my-projects"]}
+          defaultOpenKeys={["my-projects"]}
+          onClick={({ key }) => {
+            const selectedItem = menuData.find((item) => item.key === key);
+            selectedItem?.onClick?.(); // Call the action if available
+            if (!selectedItem?.onClick) navigate(`/${key}`);
+          }}
+          style={getSiderMenuStyle()}
+          items={menuData} // Use the new `items` prop
+          className="bg-white"
+        />
+      </Flex>
     </>
   );
 };

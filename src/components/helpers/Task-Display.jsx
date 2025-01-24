@@ -23,6 +23,7 @@ export default function TaskDisplay() {
   let { id } = useParams();
   id = Number.parseInt(id);
   // filter relevant tasks and project
+  console.log("tasks", tasks);
   const filteredTasks = tasks.filter((task) => task.projectId === id);
   const filteredProject = projects.find((project) => project.id === id);
   // add handlers for editing and saving
